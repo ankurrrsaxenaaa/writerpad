@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/ankurrrsaxenaaa/writerpad.svg?style=svg&circle-token=612bfa71f127c957f1ba6a5553a8c8328c58ade5)](https://circleci.com/gh/ankurrrsaxenaaa/writerpad)
+
+
 # WriterPad
 
 ## Step 1:  Create Spring Boot application
