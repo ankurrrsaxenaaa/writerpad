@@ -1,13 +1,13 @@
 [![CircleCI](https://circleci.com/gh/ankurrrsaxenaaa/writerpad.svg?style=svg&circle-token=612bfa71f127c957f1ba6a5553a8c8328c58ade5)](https://circleci.com/gh/ankurrrsaxenaaa/writerpad)
-
-
 # WriterPad
 
-## Step 1:  Create Spring Boot application
+## Day 1
+
+### Step 1:  Create Spring Boot application
 
 Cover how Spring Boot works under the hood
 
-## Step 2: DIY: Add Checkstyle and Spotbugs to the project
+### Step 2: DIY: Add Checkstyle and Spotbugs to the project
 
 - [ ] Integrate Checkstyle
 - [ ] Integrate Spotbugs
@@ -15,7 +15,7 @@ Cover how Spring Boot works under the hood
 
 
 
-## Step 3: REST API to create an article
+### Step 3: REST API to create an article
 
 `POST /api/articles`
 
@@ -61,7 +61,73 @@ Response
    }
    ```
 
+## Day 2
 
+### Step 4: Update an article
 
+```
+PATCH /api/articles/:slug-uuid
+```
 
+The body of the patch is shown below:
+
+```json
+{
+    "title": "How to learn Spring Boot by building an app",
+}
+```
+
+All the fields are optional.
+
+The `slug` also gets updated when article is changed.
+
+Returns the updated article.
+
+```json
+{
+    "id": "a98fd991e69a",
+    "slug": "how-to-learn-spring-boot-by-building-an-app",
+    "title": "How to learn Spring Booot",
+    "description": "Ever wonder how?",
+    "body": "You have to believe",
+    "tags": ["java", "spring-boot","tutorial"],
+    "createdAt": "2019-11-24T03:22:56.637Z",
+    "updatedAt": "2019-11-25T03:48:35.824Z",
+    "favorited": false,
+    "favoritesCount": 0,
+}
+```
+
+### Step 5: Get an article
+
+`GET /api/articles/:slug-uuid`
+
+This returns single article
+
+```json
+{
+    "id": "a98fd991e69a",
+    "slug": "how-to-learn-spring-boot-by-building-an-app",
+    "title": "How to learn Spring Booot",
+    "description": "Ever wonder how?",
+    "body": "You have to believe",
+    "tags": ["java", "spring-boot","tutorial"],
+    "createdAt": "2019-11-24T03:22:56.637Z",
+    "updatedAt": "2019-11-25T03:48:35.824Z",
+    "favorited": false,
+    "favoritesCount": 0,
+}
+```
+
+### Step 6: List articles
+
+`GET /api/articles`
+
+This should support pagination. 
+
+### Step 7: Delete an article
+
+```
+DELETE /api/articles/:slug-uuid
+```
 
