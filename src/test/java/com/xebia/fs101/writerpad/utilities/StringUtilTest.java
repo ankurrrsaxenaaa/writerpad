@@ -3,7 +3,8 @@ package com.xebia.fs101.writerpad.utilities;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 class StringUtilTest {
 
@@ -19,7 +20,7 @@ class StringUtilTest {
         String[] input = new String[2];
         input[0]=" Hello world ";
         input[1]=" good Bye";
-        Set<String> expectedOutput = StringUtil.generateSlugArray(input);
+        List<String> expectedOutput = StringUtil.generateSlugArray(input);
         Assertions.assertThat(expectedOutput).contains("hello-world", "good-bye");
     }
 }

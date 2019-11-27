@@ -1,26 +1,39 @@
 package com.xebia.fs101.writerpad.domain;
 
-import javax.persistence.*;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.GenerationType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 
 @Entity
 @Table(name = "articles")
 public class Article {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String title;
     private String description;
     @Column(length = 1500)
     private String body;
     @ElementCollection
-    private Set<String> tags;
+    private List<String> tags;
     private String featuredImage;
     private String slug;
+    @Column(updatable = false, nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     private boolean favorited;
     private int favoritesCount;
@@ -72,11 +85,11 @@ public class Article {
         this.body = body;
     }
 
-    public Set<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(Set<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 
@@ -130,18 +143,19 @@ public class Article {
 
     @Override
     public String toString() {
-        return "Article{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", body='" + body + '\'' +
-                ", tags=" + (tags).toString() +
-                ", featuredImage='" + featuredImage + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", favorited=" + favorited +
-                ", favoritesCount=" + favoritesCount +
-                '}';
+        return "Article{"
+                + "id=" + id
+                + ", title='" + title + '\''
+                + ", description='" + description + '\''
+                + ", body='"
+                + body + '\''
+                + ", tags=" + (tags).toString()
+                + ", featuredImage='" + featuredImage + '\''
+                + ", createdAt=" + createdAt
+                + ", updatedAt=" + updatedAt
+                + ", favorited=" + favorited
+                + ", favoritesCount=" + favoritesCount
+                + '}';
     }
 
     public static final class Builder {
@@ -149,7 +163,7 @@ public class Article {
         private String title;
         private String description;
         private String body;
-        private Set<String> tags;
+        private List<String> tags;
         private String featuredImage;
         private String slug;
         private Date createdAt;
@@ -180,7 +194,7 @@ public class Article {
             return this;
         }
 
-        public Builder setTags(Set<String> val) {
+        public Builder setTags(List<String> val) {
             tags = val;
             return this;
         }

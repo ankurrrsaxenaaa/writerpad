@@ -1,18 +1,26 @@
 package com.xebia.fs101.writerpad.utilities;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
-public class StringUtil {
+public abstract class StringUtil {
+
+    public StringUtil() {
+    }
 
     public static String generateSlug(String str) {
         return str.trim().replaceAll(" ", "-").toLowerCase();
     }
 
 
-    public static Set<String> generateSlugArray(String[] tags) {
-        return Arrays.stream(tags).map(String::toLowerCase).map(StringUtil::generateSlug).collect(Collectors.toSet());
+    public static List<String> generateSlugArray(String[] tags) {
+        List<String> taglist = new ArrayList<>();
+        for (String tag : tags) {
+            String toLowerCase = tag.toLowerCase();
+            String s = generateSlug(toLowerCase);
+            taglist.add(s);
+        }
+        return taglist;
     }
 
 }

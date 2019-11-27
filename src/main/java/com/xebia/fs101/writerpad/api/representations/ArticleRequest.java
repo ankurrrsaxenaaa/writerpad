@@ -1,17 +1,21 @@
-package com.xebia.fs101.writerpad.request_model;
+package com.xebia.fs101.writerpad.api.representations;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 
 public class ArticleRequest {
 
-
+    @NotBlank
     private String title;
+    @NotBlank
     private String description;
+    @NotBlank
     private String body;
     private String[] tags;
     private String featuredImage;
 
-    public ArticleRequest(String title, String description, String body, String[] tags, String featuredImage) {
+    public ArticleRequest(String title, String description,
+                          String body, String[] tags, String featuredImage) {
         this.title = title;
         this.description = description;
         this.body = body;
@@ -49,13 +53,12 @@ public class ArticleRequest {
 
     @Override
     public String toString() {
-        return "ArticleRequest{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", body='" + body + '\'' +
-                ", tags=" + Arrays.toString(tags) +
-                ", featuredImage='" + featuredImage + '\'' +
-                '}';
+        return "ArticleRequest{" + "title='" + title + '\''
+                + ", description='" + description + '\''
+                + ", body='" + body + '\''
+                + ", tags=" + Arrays.toString(tags)
+                + ", featuredImage='" + featuredImage + '\''
+                + '}';
     }
 
     public static final class Builder {
@@ -84,7 +87,7 @@ public class ArticleRequest {
         }
 
         public Builder setTags(String[] val) {
-            tags = val;
+            tags = val == null ? new String[0] : val;
             return this;
         }
 
@@ -92,6 +95,7 @@ public class ArticleRequest {
             featuredImage = val;
             return this;
         }
+
 
         public ArticleRequest build() {
             return new ArticleRequest(this);
