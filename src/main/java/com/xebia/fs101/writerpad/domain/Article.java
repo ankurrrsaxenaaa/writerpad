@@ -1,15 +1,16 @@
 package com.xebia.fs101.writerpad.domain;
 
 
+import com.xebia.fs101.writerpad.utilities.StringUtil;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Column;
 import javax.persistence.GenerationType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Temporal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "articles")
 public class Article {
+    public Article() {
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,11 +31,10 @@ public class Article {
     private String body;
     @ElementCollection
     private List<String> tags;
-    private String featuredImage;
     private String slug;
     @Column(updatable = false, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private Date createdAt = new Date();
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     private boolean favorited;
@@ -44,14 +46,10 @@ public class Article {
         setDescription(builder.description);
         setBody(builder.body);
         setTags(builder.tags);
-        setFeaturedImage(builder.featuredImage);
         setSlug(builder.slug);
-        setCreatedAt(builder.createdAt);
-        setUpdatedAt(builder.updatedAt);
         setFavorited(builder.favorited);
         setFavoritesCount(builder.favoritesCount);
     }
-
 
     public UUID getId() {
         return id;
@@ -93,14 +91,6 @@ public class Article {
         this.tags = tags;
     }
 
-    public String getFeaturedImage() {
-        return featuredImage;
-    }
-
-    public void setFeaturedImage(String featuredImage) {
-        this.featuredImage = featuredImage;
-    }
-
     public String getSlug() {
         return slug;
     }
@@ -121,8 +111,8 @@ public class Article {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdatedAt() {
+        this.updatedAt = new Date();
     }
 
     public boolean isFavorited() {
@@ -150,7 +140,6 @@ public class Article {
                 + ", body='"
                 + body + '\''
                 + ", tags=" + (tags).toString()
-                + ", featuredImage='" + featuredImage + '\''
                 + ", createdAt=" + createdAt
                 + ", updatedAt=" + updatedAt
                 + ", favorited=" + favorited
@@ -164,7 +153,6 @@ public class Article {
         private String description;
         private String body;
         private List<String> tags;
-        private String featuredImage;
         private String slug;
         private Date createdAt;
         private Date updatedAt;
@@ -199,18 +187,13 @@ public class Article {
             return this;
         }
 
-        public Builder setFeaturedImage(String val) {
-            featuredImage = val;
-            return this;
-        }
-
         public Builder setSlug(String val) {
             slug = val;
             return this;
         }
 
-        public Builder setCreatedAt(Date val) {
-            createdAt = val;
+        public Builder setCreatedAt() {
+            createdAt = new Date();
             return this;
         }
 
@@ -232,5 +215,24 @@ public class Article {
         public Article build() {
             return new Article(this);
         }
+    }
+
+    public Article update(Article copyFrom) {
+        if (copyFrom.getTitle() != null) {
+            this.setTitle(copyFrom.getTitle());
+            this.setSlug(StringUtil.generateSlug(copyFrom.getTitle()));
+        }
+        if (copyFrom.getBody() != null) {
+            this.setBody(copyFrom.getBody());
+        }
+        if (copyFrom.getDescription() != null) {
+            this.setDescription(copyFrom.getDescription());
+        }
+        if (copyFrom.getTags() != null) {
+            this.setTags(copyFrom.getTags());
+        }
+
+        this.setUpdatedAt();
+        return this;
     }
 }

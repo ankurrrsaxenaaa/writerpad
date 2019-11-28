@@ -1,5 +1,8 @@
 package com.xebia.fs101.writerpad.api.representations;
 
+import com.xebia.fs101.writerpad.domain.Article;
+import com.xebia.fs101.writerpad.utilities.StringUtil;
+
 import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 
@@ -12,7 +15,6 @@ public class ArticleRequest {
     @NotBlank
     private String body;
     private String[] tags;
-    private String featuredImage;
 
     public ArticleRequest(String title, String description,
                           String body, String[] tags, String featuredImage) {
@@ -20,7 +22,6 @@ public class ArticleRequest {
         this.description = description;
         this.body = body;
         this.tags = tags;
-        this.featuredImage = featuredImage;
     }
 
     private ArticleRequest(Builder builder) {
@@ -28,7 +29,6 @@ public class ArticleRequest {
         description = builder.description;
         body = builder.body;
         tags = builder.tags;
-        featuredImage = builder.featuredImage;
     }
 
     public String getTitle() {
@@ -47,9 +47,6 @@ public class ArticleRequest {
         return tags;
     }
 
-    public String getFeaturedImage() {
-        return featuredImage;
-    }
 
     @Override
     public String toString() {
@@ -57,7 +54,6 @@ public class ArticleRequest {
                 + ", description='" + description + '\''
                 + ", body='" + body + '\''
                 + ", tags=" + Arrays.toString(tags)
-                + ", featuredImage='" + featuredImage + '\''
                 + '}';
     }
 
@@ -66,7 +62,6 @@ public class ArticleRequest {
         private String description;
         private String body;
         private String[] tags;
-        private String featuredImage;
 
         public Builder() {
         }
@@ -91,14 +86,16 @@ public class ArticleRequest {
             return this;
         }
 
-        public Builder setFeaturedImage(String val) {
-            featuredImage = val;
-            return this;
-        }
-
-
         public ArticleRequest build() {
             return new ArticleRequest(this);
         }
+    }
+
+    public Article toArticle() {
+        return new Article.Builder().setTitle(this.title)
+                .setDescription(this.description)
+                .setBody(this.body)
+                .setTags(StringUtil.generateSlugArray(this.tags))
+                .build();
     }
 }

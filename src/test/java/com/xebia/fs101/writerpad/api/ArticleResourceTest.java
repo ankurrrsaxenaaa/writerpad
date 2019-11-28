@@ -1,6 +1,11 @@
 package com.xebia.fs101.writerpad.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xebia.fs101.writerpad.api.representations.ArticleRequest;
+import com.xebia.fs101.writerpad.domain.Article;
+import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import org.assertj.core.api.Assertions;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -8,15 +13,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class ArticleResourceTest {
+
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private ArticleRepository articleRepository;
 
     @Test
     void mock_mvc_should_be_set() {
@@ -61,5 +79,66 @@ public class ArticleResourceTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void should_update_an_article() throws Exception {
+        ArticleRequest articleRequest = new ArticleRequest.Builder()
+                .setBody("abc")
+                .setTitle("my blog")
+                .setDescription("ankur saxena")
+                .build();
+        Article article= createArticle("title1","description1","body1");
+        Article toupdate = articleRequest.toArticle();
+        Article saved = this.articleRepository.save(toupdate);
+        String json = objectMapper.writeValueAsString(articleRequest);
+        String id = String.format("%s-%s", saved.getSlug(), saved.getId());
+        this.mockMvc.perform(MockMvcRequestBuilders.patch("/api/articles/{slugUuid}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title")
+                        .value("my blog"))
+                .andExpect(jsonPath("$.createdAt")
+                        .value(CoreMatchers.not(article.getUpdatedAt())));
+    }
 
+    @Test
+    void should_list_all_articles() throws Exception {
+        Article article1 = createArticle("Title1", "Description1", "body1");
+        Article article2 = createArticle("Title2", "description2", "body2");
+        Article article3 = createArticle("Title3", "description3", "body3");
+
+        articleRepository.saveAll(Arrays.asList(article1, article2, article3));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/articles"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3));
+
+
+    }
+
+    @Test
+    void should_list_all_articles_with_pagination() throws Exception {
+        Article article1 = createArticle("Title1", "Description1", "body1");
+        Article article2 = createArticle("Title2", "description2", "body2");
+        Article article3 = createArticle("Title3", "description3", "body3");
+
+        articleRepository.saveAll(Arrays.asList(article1, article2, article3));
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/articles?pageNo=0&pageSize=1"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+
+    }
+
+    private Article createArticle(String title, String description, String body) {
+        return new Article.Builder()
+                .setTitle(title)
+                .setDescription(description)
+                .setBody(body)
+                .build();
+    }
 }

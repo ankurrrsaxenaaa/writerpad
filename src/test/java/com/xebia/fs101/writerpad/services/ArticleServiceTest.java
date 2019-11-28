@@ -20,11 +20,11 @@ class ArticleServiceTest {
                 .setBody("abc def ghi")
                 .setDescription("some description")
                 .setTags(new String[]{"code", "student"})
-                .setFeaturedImage("writerpad.com/image101.jpg")
                 .build();
+        Article toSave = articleRequest.toArticle();
 
 
-        Article article = articleService.saveArticle(articleRequest);
+        Article article = articleService.saveArticle(toSave);
         Assertions.assertThat(article).isNotNull();
     }
 
