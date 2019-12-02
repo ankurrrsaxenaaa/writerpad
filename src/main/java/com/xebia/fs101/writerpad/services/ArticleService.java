@@ -69,7 +69,7 @@ public class ArticleService {
     }
 
     public Article publish(Article publish) {
-        publish.setStatus(ArticleStatus.valueOf("PUBLISHED".toUpperCase(Locale.ENGLISH)));
+        publish.setStatus(ArticleStatus.PUBLISHED);
         return this.articleRepository.save(publish);
     }
 
