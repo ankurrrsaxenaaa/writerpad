@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.writerpad.api.representations.ArticleRequest;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
+import com.xebia.fs101.writerpad.repository.CommentRepository;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 
@@ -23,9 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 public class ArticleResourceTest {
 
+    @AfterEach
+    void tearDown() {
+        commentRepository.deleteAll();
+        articleRepository.deleteAll();
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,6 +41,9 @@ public class ArticleResourceTest {
     @Autowired
     private ArticleRepository articleRepository;
 
+    @Autowired
+    CommentRepository commentRepository;
+
     @Test
     void mock_mvc_should_be_set() {
         Assertions.assertThat(mockMvc).isNotNull();
@@ -43,22 +51,28 @@ public class ArticleResourceTest {
 
 
     @Test
-    void check_api_articles_post_request_status_as_created() throws Exception {
-
-        String mockJson = "{\n" +
-                "  \"title\": \"How to learn Spring Booot\",\n" +
-                "  \"description\": \"Ever wonder how?\",\n" +
-                "  \"body\": \"You have to believe\",\n" +
-                "  \"tags\": [\"java\", \"Spring Boot\", \"tutorial\"],\n" +
-                "  \"featuredImage\": \"url of the featured image\"\n" +
-                "}";
-
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/articles")
-                .content(mockJson)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+    void should_be_able_to_return_201_status_code_for_create_when_proper_article_request_is_given_with_required_feilds() throws Exception {
+        ArticleRequest articleRequest = new ArticleRequest.Builder()
+                .setBody("Hello world")
+                .setDescription("Life is beautiful")
+                .setTitle("Okay life!")
+                .build();
+        String json = objectMapper.writeValueAsString(articleRequest);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/articles")
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.body").value("Hello world"))
+                .andExpect(jsonPath("$.title").value("Okay life!"))
+                .andExpect(jsonPath("$.description").value("Life is beautiful"))
+                .andExpect(jsonPath("$.slug").value("okay-life!"))
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+                .andExpect(jsonPath("$.favorited").isBoolean())
+                .andExpect(jsonPath("$.favorited").value(false))
+                .andExpect(jsonPath("$.favoritesCount").value(0));
     }
 
     @Test
@@ -86,7 +100,7 @@ public class ArticleResourceTest {
                 .setTitle("my blog")
                 .setDescription("ankur saxena")
                 .build();
-        Article article= createArticle("title1","description1","body1");
+        Article article = createArticle("title1", "description1", "body1");
         Article toupdate = articleRequest.toArticle();
         Article saved = this.articleRepository.save(toupdate);
         String json = objectMapper.writeValueAsString(articleRequest);

@@ -2,6 +2,7 @@ package com.xebia.fs101.writerpad.utilities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class StringUtil {
 
@@ -27,5 +28,10 @@ public abstract class StringUtil {
         }
         return taglist;
     }
+
+    public static UUID extractId(String slugUuid) {
+        return UUID.fromString(slugUuid.substring(slugUuid.length() - 36));
+    }
+
 
 }

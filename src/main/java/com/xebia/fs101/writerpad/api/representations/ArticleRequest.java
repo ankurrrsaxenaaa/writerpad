@@ -1,10 +1,11 @@
 package com.xebia.fs101.writerpad.api.representations;
 
 import com.xebia.fs101.writerpad.domain.Article;
-import com.xebia.fs101.writerpad.utilities.StringUtil;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
+
+import static com.xebia.fs101.writerpad.utilities.StringUtil.generateSlugArray;
 
 public class ArticleRequest {
 
@@ -16,8 +17,18 @@ public class ArticleRequest {
     private String body;
     private String[] tags;
 
+    @Override
+    public String toString() {
+        return "ArticleRequest{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", body='" + body + '\'' +
+                ", tags=" + Arrays.toString(tags) +
+                '}';
+    }
+
     public ArticleRequest(String title, String description,
-                          String body, String[] tags, String featuredImage) {
+                          String body, String[] tags) {
         this.title = title;
         this.description = description;
         this.body = body;
@@ -47,15 +58,6 @@ public class ArticleRequest {
         return tags;
     }
 
-
-    @Override
-    public String toString() {
-        return "ArticleRequest{" + "title='" + title + '\''
-                + ", description='" + description + '\''
-                + ", body='" + body + '\''
-                + ", tags=" + Arrays.toString(tags)
-                + '}';
-    }
 
     public static final class Builder {
         private String title;
@@ -92,10 +94,14 @@ public class ArticleRequest {
     }
 
     public Article toArticle() {
-        return new Article.Builder().setTitle(this.title)
+        Article article = new Article.Builder()
+                .setTitle(this.title)
                 .setDescription(this.description)
                 .setBody(this.body)
-                .setTags(StringUtil.generateSlugArray(this.tags))
                 .build();
+        if(this.tags!=null){
+            article.setTags(generateSlugArray(this.tags));
+        }
+        return article;
     }
 }

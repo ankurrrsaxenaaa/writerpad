@@ -1,21 +1,20 @@
 [![CircleCI](https://circleci.com/gh/ankurrrsaxenaaa/writerpad.svg?style=svg&circle-token=612bfa71f127c957f1ba6a5553a8c8328c58ade5)](https://circleci.com/gh/ankurrrsaxenaaa/writerpad)
+
 # WriterPad
 
 ## Day 1
 
-### Step 1:  Create Spring Boot application
+### Story 1:  Create Spring Boot application
 
 Cover how Spring Boot works under the hood
 
-### Step 2: DIY: Add Checkstyle and Spotbugs to the project
+### Story 2: DIY: Add Checkstyle and Spotbugs to the project
 
 - [ ] Integrate Checkstyle
 - [ ] Integrate Spotbugs
 - [ ] Integrate CircleCI
 
-
-
-### Step 3: REST API to create an article
+### Story 3: REST API to create an article
 
 `POST /api/articles`
 
@@ -63,7 +62,7 @@ Response
 
 ## Day 2
 
-### Step 4: Update an article
+### Story 4: Update an article
 
 ```
 PATCH /api/articles/:slug-uuid
@@ -98,7 +97,7 @@ Returns the updated article.
 }
 ```
 
-### Step 5: Get an article
+### Story 5: Get an article
 
 `GET /api/articles/:slug-uuid`
 
@@ -119,15 +118,77 @@ This returns single article
 }
 ```
 
-### Step 6: List articles
+### Story 6: List articles
 
 `GET /api/articles`
 
 This should support pagination. 
 
-### Step 7: Delete an article
+### Story 7: Delete an article
 
 ```
 DELETE /api/articles/:slug-uuid
 ```
 
+## Day 3
+
+### Story 8: Add comments to an article
+
+```
+POST /api/articles/:slug-uuid/comments
+```
+
+Example request body
+
+```json
+{
+    "body": "Awesome tutorial!"
+ }
+```
+
+This will return 201 if successfully created.
+
+`body` is mandatory. Should return 400 if `body` is not present.
+
+Application should check spam words in the body.  You can find list of English bad words from here - [Link](https://docs.google.com/spreadsheets/d/1hIEi2YG3ydav1E06Bzf2mQbGZ12kh2fe4ISgLg_UBuM/edit#gid=0)
+
+If request contains bad words then you should return HTTP status 400. 
+
+You should also store IP address from which comment was made in the comment database table.
+
+### Story 9: Get comments for an article
+
+```
+GET /api/articles/:slug-uuid/comments
+```
+
+This will return multiple comments
+
+```json
+[
+    {
+        "id": 1,
+        "createdAt": "2019-11-18T03:22:56.637Z",
+        "updatedAt": "2019-11-18T03:22:56.637Z",
+        "body": "Awesome article!",
+	      "idAddress": "10.101.0.1"
+    },
+    {
+        "id": 2,
+        "createdAt": "2019-11-18T03:22:56.637Z",
+        "updatedAt": "2019-11-18T03:22:56.637Z",
+        "body": "Bad article!",
+         "idAddress": "10.101.0.3"
+    }
+]
+```
+
+### Story 10: Delete comment for an article
+
+```
+DELETE /api/articles/:slug-uuid/comments/:id
+```
+
+Returns 204 on successfully deletion.
+
+Returns 404 if article or comment does not exist.

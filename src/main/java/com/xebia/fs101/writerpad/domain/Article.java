@@ -1,16 +1,9 @@
 package com.xebia.fs101.writerpad.domain;
 
-
+import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import com.xebia.fs101.writerpad.utilities.StringUtil;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.TemporalType;
-import javax.persistence.Temporal;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "articles")
 public class Article {
+
     public Article() {
     }
 
@@ -32,16 +26,23 @@ public class Article {
     @ElementCollection
     private List<String> tags;
     private String slug;
+
     @Column(updatable = false, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt = new Date();
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    private boolean favorited;
-    private int favoritesCount;
+    private boolean favorited = false;
+    private int favoritesCount = 0;
+
+    @Enumerated(EnumType.STRING)
+    private ArticleStatus status = ArticleStatus.valueOf("DRAFT");
+
+    @OneToMany(mappedBy = "article")
+    private List<Comment> comments;
 
     private Article(Builder builder) {
-        setId(builder.id);
         setTitle(builder.title);
         setDescription(builder.description);
         setBody(builder.body);
@@ -51,39 +52,56 @@ public class Article {
         setFavoritesCount(builder.favoritesCount);
     }
 
+
+    public ArticleStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ArticleStatus status) {
+        this.status = status;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
     public UUID getId() {
+
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public String getTitle() {
+
         return title;
     }
 
     public void setTitle(String title) {
+
         this.title = title;
     }
 
     public String getDescription() {
+
         return description;
     }
 
     public void setDescription(String description) {
+
         this.description = description;
     }
 
     public String getBody() {
+
         return body;
     }
 
     public void setBody(String body) {
+
         this.body = body;
     }
 
     public List<String> getTags() {
+
         return tags;
     }
 
@@ -97,14 +115,6 @@ public class Article {
 
     public void setSlug(String slug) {
         this.slug = slug;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
     }
 
     public Date getUpdatedAt() {
@@ -148,23 +158,15 @@ public class Article {
     }
 
     public static final class Builder {
-        private UUID id;
         private String title;
         private String description;
         private String body;
         private List<String> tags;
         private String slug;
-        private Date createdAt;
-        private Date updatedAt;
         private boolean favorited;
         private int favoritesCount;
 
         public Builder() {
-        }
-
-        public Builder setId(UUID val) {
-            id = val;
-            return this;
         }
 
         public Builder setTitle(String val) {
@@ -189,16 +191,6 @@ public class Article {
 
         public Builder setSlug(String val) {
             slug = val;
-            return this;
-        }
-
-        public Builder setCreatedAt() {
-            createdAt = new Date();
-            return this;
-        }
-
-        public Builder setUpdatedAt(Date val) {
-            updatedAt = val;
             return this;
         }
 
@@ -231,7 +223,6 @@ public class Article {
         if (copyFrom.getTags() != null) {
             this.setTags(copyFrom.getTags());
         }
-
         this.setUpdatedAt();
         return this;
     }
