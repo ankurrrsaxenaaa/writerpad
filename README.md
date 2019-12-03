@@ -192,3 +192,45 @@ DELETE /api/articles/:slug-uuid/comments/:id
 Returns 204 on successfully deletion.
 
 Returns 404 if article or comment does not exist.
+
+## Day 4
+### Story 10 : An Article is having a STATUS
+A newly created article is in `DRAFT` status. It can be modified to a `PUBLISHED` status.
+
+`GET /api/articles/:slug-uuid`
+
+This returns single article with STATUS
+
+```json
+{
+    "id": "a98fd991e69a",
+    "slug": "how-to-learn-spring-boot-by-building-an-app",
+    "title": "How to learn Spring Booot",
+    "description": "Ever wonder how?",
+    "body": "You have to believe",
+    "tags": ["java", "spring-boot","tutorial"],
+    "createdAt": "2019-11-24T03:22:56.637Z",
+    "updatedAt": "2019-11-25T03:48:35.824Z",
+    "favorited": false,
+    "favoritesCount": 0,
+    "status" : "DRAFT"
+}
+```
+
+### Story 11 : Get Articles By Status
+
+`GET /api/articles/${status}`
+
+This should support pagination. 
+
+### Story 12 : Publish Article
+
+Add `POST /api/articles/:slug-uuid/PUBLISH` to publish an article. This will changes the status to PUBLISH and send a mail to your xebia mail id. Mail sending can be configured using `JavaMailSender`. The article status should be changed even if the mail sending throws an error.
+
+Response
+
+1. It will return response code 204 if article is PUBLISHED successfully
+
+2. It will return 400 if article is already PUBLISHED
+
+3. It will return 500 if anything else happened
