@@ -19,12 +19,12 @@ public class ArticleRequest {
 
     @Override
     public String toString() {
-        return "ArticleRequest{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", body='" + body + '\'' +
-                ", tags=" + Arrays.toString(tags) +
-                '}';
+        return "ArticleRequest{"
+                + "title='" + title + '\''
+                + ", description='" + description + '\''
+                + ", body='" + body + '\''
+                + ", tags=" + Arrays.toString(tags)
+                + '}';
     }
 
     public ArticleRequest(String title, String description,
@@ -99,7 +99,7 @@ public class ArticleRequest {
                 .setDescription(this.description)
                 .setBody(this.body)
                 .build();
-        if(this.tags!=null){
+        if (this.tags != null) {
             article.setTags(generateSlugArray(this.tags));
         }
         return article;

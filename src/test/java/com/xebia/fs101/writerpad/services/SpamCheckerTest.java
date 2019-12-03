@@ -1,35 +1,16 @@
 package com.xebia.fs101.writerpad.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
-
-import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class SpamCheckerTest {
 
-    @Mock
-    private ResourceLoader resourceLoader;
-
-    @InjectMocks
-    private SpamChecker spamChecker;
-
-    @BeforeEach
-    void setUp() throws IOException {
-        Mockito.when(resourceLoader.getResource(ArgumentMatchers.anyString()))
-                .thenReturn(new ClassPathResource("Spam.txt"));
-        spamChecker.init();
-    }
+    @Autowired
+    SpamChecker spamChecker;
 
     @Test
     void should_return_false_if_spam() throws Exception {

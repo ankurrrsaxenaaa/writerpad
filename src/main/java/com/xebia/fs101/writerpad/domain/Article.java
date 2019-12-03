@@ -3,7 +3,18 @@ package com.xebia.fs101.writerpad.domain;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import com.xebia.fs101.writerpad.utilities.StringUtil;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +48,7 @@ public class Article {
     private int favoritesCount = 0;
 
     @Enumerated(EnumType.STRING)
-    private ArticleStatus status = ArticleStatus.valueOf("DRAFT");
+    private ArticleStatus status = ArticleStatus.DRAFT;
 
     @OneToMany(mappedBy = "article")
     private List<Comment> comments;

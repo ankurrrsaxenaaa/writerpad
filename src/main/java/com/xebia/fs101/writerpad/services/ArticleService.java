@@ -7,11 +7,8 @@ import com.xebia.fs101.writerpad.utilities.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,9 +19,6 @@ public class ArticleService {
 
     @Autowired
     private ArticleRepository articleRepository;
-
-    @Autowired
-    JavaMailSender javaMailSender;
 
     public Article save(Article article) {
         article.setSlug(StringUtil.generateSlug(article.getTitle()));
@@ -64,7 +58,7 @@ public class ArticleService {
 
     public Page<Article> findByStatus(String status, Pageable pageable) {
         return this.articleRepository.findAllByStatus(
-                ArticleStatus.valueOf(status.toUpperCase(Locale.ENGLISH)),
+                ArticleStatus.valueOf(status.toUpperCase()),
                 pageable);
     }
 
@@ -73,12 +67,8 @@ public class ArticleService {
         return this.articleRepository.save(publish);
     }
 
-    public boolean sendEmail(Article article) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("ankur.saxena@xebia.com");
-        message.setSubject("Your article is published!");
-        message.setText("Your article "+article.getTitle()+" has been published!");
-        javaMailSender.send(message);
-        return true;
+    public boolean isDraft(ArticleStatus status) {
+        return status == ArticleStatus.DRAFT;
     }
+
 }

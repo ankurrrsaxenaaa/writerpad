@@ -1,6 +1,13 @@
 package com.xebia.fs101.writerpad.domain;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,6 +31,7 @@ public class Comment {
         setArticle(builder.article);
         setBody(builder.body);
         setIpAddress(builder.ipAddress);
+        setUpdatedAt();
     }
 
     public Comment() {
@@ -99,11 +107,11 @@ public class Comment {
 
         @Override
         public String toString() {
-            return "Builder{" +
-                    "article=" + article +
-                    ", body='" + body + '\'' +
-                    ", ipAddress='" + ipAddress + '\'' +
-                    '}';
+            return "Builder{"
+                    + "article=" + article
+                    + ", body='" + body + '\''
+                    + ", ipAddress='" + ipAddress + '\''
+                    + '}';
         }
     }
 }

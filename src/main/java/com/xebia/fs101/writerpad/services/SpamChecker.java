@@ -1,10 +1,8 @@
 package com.xebia.fs101.writerpad.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -14,18 +12,12 @@ import static java.nio.file.Files.readAllLines;
 @Service
 public class SpamChecker {
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
+    @Value("${spam.file}")
+    File file;
     private List<String> lines;
 
-    @PostConstruct
-    public void init() throws IOException {
-        File file = resourceLoader.getResource("classpath:Spam.txt").getFile();
-        lines = readAllLines(file.toPath());
-    }
-
     public boolean isSpam(String content) throws IOException {
+        lines = readAllLines(file.toPath());
         String[] words = content.toLowerCase().split("\\s");
         for (String word : words) {
             if (lines.contains(word)) {
