@@ -47,8 +47,8 @@ public class ArticleService {
         return this.articleRepository.findById(id);
     }
 
-    public void delete(Article article) {
-        this.articleRepository.deleteById(article.getId());
+    public void delete(UUID id) {
+        this.articleRepository.deleteById(id);
     }
 
     public Page<Article> findAll(Pageable pageable) {

@@ -1,5 +1,7 @@
 package com.xebia.fs101.writerpad.utilities;
 
+import com.xebia.fs101.writerpad.domain.Article;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,5 +35,7 @@ public abstract class StringUtil {
         return UUID.fromString(slugUuid.substring(slugUuid.length() - 36));
     }
 
-
+    public static String generateSlugUuid(Article article) {
+        return article.getId() + "-" + article.getSlug();
+    }
 }

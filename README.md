@@ -219,7 +219,7 @@ This returns single article with STATUS
 
 ### Story 11 : Get Articles By Status
 
-`GET /api/articles/${status}`
+`GET /api/articles?status=DRAFT`
 
 This should support pagination. 
 
@@ -234,3 +234,50 @@ Response
 2. It will return 400 if article is already PUBLISHED
 
 3. It will return 500 if anything else happened
+
+## Day 5
+
+### Story 13: Find time to read for an article
+
+You have to define a REST endpoint that will find time to read for an article given its id
+
+```
+GET /api/articles/:slug-uuid/timetoread
+```
+
+This should return following response
+
+```json
+{
+"articleId": "slug-uuid",
+"timeToRead": {
+ "mins" : 3,
+ "seconds" : 50
+   } 
+}
+```
+
+The logic to calculate time to read is `total number of words / speed of average human`
+
+The speed of average human should be configurable.
+
+## Day 6
+
+### Story 14 : Generate Tag based metrics 
+You have to define a REST endpoint that will provide all tags, provided in all articles, with their occurance.
+
+```
+GET /api/articles/tags
+```
+
+This should return following response
+
+```json
+[{ "tag" : "java", "occurence" : "10"},
+{ "tag" : "spring", "occurance" : "5"},
+{ "tag" : "tutorial", "occurance" : "2"}
+]
+```
+
+You need to look into the tags marked in an article. Tags metrics should not differentiate based on casing. 'Java','java', 'JAVA', 'JaVA' etc, should be considered one for determining count.
+

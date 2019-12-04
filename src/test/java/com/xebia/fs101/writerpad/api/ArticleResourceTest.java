@@ -10,7 +10,6 @@ import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -248,7 +247,7 @@ public class ArticleResourceTest {
 
     @Test
     void should_return_an_articles_by_status_with_id() throws Exception {
-        Article article = createArticle("Title 1","Description 1","Body 1");
+        Article article = createArticle("Title 1", "Description 1", "Body 1");
         article.setUpdatedAt();
         Article saved = articleRepository.save(article);
         mockMvc.perform(get("/api/articles/{slugUuid}", "great-world-" + saved.getId()))
@@ -281,7 +280,7 @@ public class ArticleResourceTest {
     void should_be_able_to_publish_the_article() throws Exception {
         Article article = createArticle("Title 1", "Description 1", "Body 1");
         Article saved = articleRepository.save(article);
-        when(emailService.sendEmail(article)).thenReturn(true);
+        doNothing().when(emailService).sendEmail(article);
         mockMvc.perform(post("/api/articles/{slugUuid}/PUBLISH", "title-1" + saved.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -293,10 +292,26 @@ public class ArticleResourceTest {
         article.setUpdatedAt();
         article.setStatus(ArticleStatus.PUBLISHED);
         Article saved = articleRepository.save(article);
-        when(emailService.sendEmail(article)).thenReturn(true);
+        doNothing().when(emailService).sendEmail(article);
         mockMvc.perform(post("/api/articles/{sluguuid}/PUBLISH", "title-1-" + saved.getId()))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_be_able_to_find_time_to_read_for_an_article() throws Exception {
+        Article article = createArticle("Title1",
+                "Description 1",
+                "This is a really really really really really really really really really really long sentence");
+        article.setUpdatedAt();
+        Article saved = articleRepository.save(article);
+        mockMvc.perform(get("/api/articles/{slugUuid}/timetoread", "title1-" + saved.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articleId").isNotEmpty())
+                .andExpect(jsonPath("$.timeToRead").hasJsonPath())
+                .andExpect(jsonPath("$.timeToRead.mins").isNotEmpty())
+                .andExpect(jsonPath("$.timeToRead.seconds").isNotEmpty());
     }
 
     private Article createArticle(String title, String description, String body) {

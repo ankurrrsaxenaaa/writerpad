@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 public class NoopEmailService implements EmailService {
 
     @Override
-    public boolean sendEmail(Article article) {
-        return true;
+    public void sendEmail(Article article) {
     }
 }
