@@ -1,16 +1,17 @@
 package com.xebia.fs101.writerpad.api;
 
 import com.xebia.fs101.writerpad.api.representations.ArticleRequest;
-import com.xebia.fs101.writerpad.api.representations.ArticleResponse;
+import com.xebia.fs101.writerpad.api.representations.TagResponse;
+import com.xebia.fs101.writerpad.api.representations.TimeToRead;
+import com.xebia.fs101.writerpad.api.representations.TimeToReadResponse;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.services.ArticleService;
 import com.xebia.fs101.writerpad.services.EmailService;
+import com.xebia.fs101.writerpad.services.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -36,9 +45,8 @@ public class ArticleResource {
     @Autowired
     private EmailService emailService;
 
-    @Value("${average.reading.speed.wpm}")
-    int wordsPerMinute;
-
+    @Autowired
+    TimeService timeService;
 
     @PostMapping
     public ResponseEntity<Article> create(@Valid
@@ -46,7 +54,7 @@ public class ArticleResource {
         Article toSave = articleRequest.toArticle();
         Article saved = articleService.save(toSave);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(CREATED)
                 .body(saved);
     }
 
@@ -65,10 +73,10 @@ public class ArticleResource {
         if (article.isPresent()) {
             Article found = article.get();
             return ResponseEntity
-                    .status(HttpStatus.CREATED)
+                    .status(CREATED)
                     .body(found);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(NOT_FOUND)
                 .build();
     }
 
@@ -81,7 +89,7 @@ public class ArticleResource {
         Page<Article> pageResult = articleService.findByStatus(status, pageable);
         List<Article> found = pageResult.getContent();
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(OK)
                 .body(found);
     }
 
@@ -93,7 +101,7 @@ public class ArticleResource {
         Page<Article> pageResult = articleService.findAll(pageable);
         List<Article> found = pageResult.getContent();
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(OK)
                 .body(found);
     }
 
@@ -101,7 +109,7 @@ public class ArticleResource {
     public ResponseEntity<Void> delete(@PathVariable("slugUuid") String slugUuid) {
         Optional<Article> article = articleService.findBySlugId(slugUuid);
         if (!article.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(NOT_FOUND)
                     .build();
         }
         articleService.delete(article.get().getId());
@@ -115,27 +123,40 @@ public class ArticleResource {
         if (article.isPresent() && articleService.isDraft(article.get().getStatus())) {
             Article published = articleService.publish(article.get());
             emailService.sendEmail(published);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(NO_CONTENT)
                     .build();
         } else if (article.isPresent() && !articleService.isDraft(article.get().getStatus())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.status(BAD_REQUEST)
                     .build();
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity.status(NOT_FOUND)
                 .build();
     }
 
     @GetMapping("/{slugUuid}/timetoread")
-    public ResponseEntity<ArticleResponse> timeToRead(@PathVariable("slugUuid") String slugUuid) {
+    public ResponseEntity<TimeToReadResponse> timeToRead(
+            @PathVariable("slugUuid") String slugUuid) {
         Optional<Article> article = articleService.findBySlugId(slugUuid);
         if (!article.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(NOT_FOUND)
                     .build();
         }
         Article found = article.get();
-        ArticleResponse articleResponse = ArticleResponse.timeToReadResponse(found, wordsPerMinute);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(articleResponse);
+        int readingTimeInSeconds = timeService.readingTimeInSeconds(found.getBody());
+        TimeToRead timeToRead = new TimeToRead();
+        timeToRead.setReadingTime(readingTimeInSeconds % 60, readingTimeInSeconds / 60);
+        return ResponseEntity.status(OK)
+                .body(new TimeToReadResponse(slugUuid, timeToRead));
     }
 
+    @GetMapping("/tags")
+    public ResponseEntity<List<TagResponse>> getTags() {
+        Map<String, Long> tags = articleService.getTags();
+        List<TagResponse> tagResponse = tags.entrySet()
+                .stream()
+                .map(t -> new TagResponse(t.getKey(), t.getValue()))
+                .collect(Collectors.toList());
+        return ResponseEntity.status(OK)
+                .body(tagResponse);
+    }
 }

@@ -1,5 +1,7 @@
 package com.xebia.fs101.writerpad.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +21,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @ManyToOne
+    @JsonManagedReference
     private Article article;
     private String body;
     @Temporal(TemporalType.TIMESTAMP)
@@ -26,6 +29,10 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     private String ipAddress;
+
+    public Article getArticle() {
+        return article;
+    }
 
     private Comment(Builder builder) {
         setArticle(builder.article);

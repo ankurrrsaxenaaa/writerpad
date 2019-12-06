@@ -1,5 +1,6 @@
 package com.xebia.fs101.writerpad.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import com.xebia.fs101.writerpad.utilities.StringUtil;
 
@@ -51,7 +52,12 @@ public class Article {
     private ArticleStatus status = ArticleStatus.DRAFT;
 
     @OneToMany(mappedBy = "article")
+    @JsonBackReference
     private List<Comment> comments;
+
+    public List<Comment> getComments() {
+        return comments;
+    }
 
     private Article(Builder builder) {
         setTitle(builder.title);

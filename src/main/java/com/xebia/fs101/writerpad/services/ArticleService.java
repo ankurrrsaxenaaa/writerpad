@@ -8,16 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.xebia.fs101.writerpad.utilities.StringUtil.extractId;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class ArticleService {
 
     @Autowired
     private ArticleRepository articleRepository;
+
 
     public Article save(Article article) {
         article.setSlug(StringUtil.generateSlug(article.getTitle()));
@@ -70,4 +77,12 @@ public class ArticleService {
         return status == ArticleStatus.DRAFT;
     }
 
+
+    @Transactional(readOnly = true)
+    public Map<String, Long> getTags() {
+        Stream<String> tags = articleRepository.findAllByTags();
+        return tags
+                .map(t -> t.trim().toLowerCase())
+                .collect(groupingBy(t -> t, counting()));
+    }
 }

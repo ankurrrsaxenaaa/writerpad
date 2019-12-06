@@ -27,4 +27,9 @@ public class TimeToRead {
     public void setSeconds(int seconds) {
         this.seconds = seconds;
     }
+
+    public void setReadingTime(int seconds, int minutes) {
+        this.mins = minutes;
+        this.seconds = seconds;
+    }
 }

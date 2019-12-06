@@ -22,7 +22,6 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -312,6 +311,28 @@ public class ArticleResourceTest {
                 .andExpect(jsonPath("$.timeToRead").hasJsonPath())
                 .andExpect(jsonPath("$.timeToRead.mins").isNotEmpty())
                 .andExpect(jsonPath("$.timeToRead.seconds").isNotEmpty());
+    }
+
+    @Test
+    void should_return_all_tags_with_their_number_of_occurence() throws Exception {
+        Article article1 = new Article.Builder()
+                .setTitle("Title 1")
+                .setBody("Body 1")
+                .setDescription("Description 1")
+                .setTags(Arrays.asList("java", "boot", "spring"))
+                .build();
+        Article article2 = new Article.Builder()
+                .setTitle("Title 1")
+                .setBody("Body 1")
+                .setDescription("Description 1")
+                .setTags(Arrays.asList("JaVa", "first blog", " spring"))
+                .build();
+        articleRepository.saveAll(Arrays.asList(article1, article2));
+        mockMvc.perform(get("/api/articles/tags"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(4));
     }
 
     private Article createArticle(String title, String description, String body) {
