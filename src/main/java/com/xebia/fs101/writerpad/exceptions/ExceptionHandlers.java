@@ -1,4 +1,4 @@
-package com.xebia.fs101.writerpad.exception;
+package com.xebia.fs101.writerpad.exceptions;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;

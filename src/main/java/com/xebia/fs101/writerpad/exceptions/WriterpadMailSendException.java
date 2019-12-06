@@ -1,4 +1,4 @@
-package com.xebia.fs101.writerpad.exception;
+package com.xebia.fs101.writerpad.exceptions;
 
 public class WriterpadMailSendException extends RuntimeException {
     private Object context;

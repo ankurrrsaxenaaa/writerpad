@@ -85,4 +85,21 @@ public class ArticleService {
                 .map(t -> t.trim().toLowerCase())
                 .collect(groupingBy(t -> t, counting()));
     }
+
+    public void favourite(Article found) {
+        found.setFavoritesCount(found.getFavoritesCount() + 1);
+        found.setFavorited(true);
+        this.articleRepository.save(found);
+    }
+
+    public void unfavourite(Article found) {
+        int favouriteCount = found.getFavoritesCount();
+        if (favouriteCount == 1) {
+            found.setFavorited(false);
+        }
+        if (favouriteCount != 0) {
+            found.setFavoritesCount(found.getFavoritesCount() - 1);
+        }
+        this.articleRepository.save(found);
+    }
 }

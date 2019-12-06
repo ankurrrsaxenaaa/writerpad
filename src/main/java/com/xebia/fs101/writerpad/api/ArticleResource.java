@@ -159,4 +159,28 @@ public class ArticleResource {
         return ResponseEntity.status(OK)
                 .body(tagResponse);
     }
+
+    @PatchMapping("/{slugUuid}/FAVOURITE")
+    public ResponseEntity<Void> favouriteArticle(
+            @PathVariable String slugUuid) {
+        Optional<Article> article = articleService.findBySlugId(slugUuid);
+        if (!article.isPresent()) {
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
+        Article found = article.get();
+        articleService.favourite(found);
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{slugUuid}/UNFAVOURITE")
+    public ResponseEntity<Void> unfavouriteArticle(
+            @PathVariable("slugUuid") String slugUuid) {
+        Optional<Article> article = articleService.findBySlugId(slugUuid);
+        if (!article.isPresent()) {
+            return ResponseEntity.status(NOT_FOUND).build();
+        }
+        Article found = article.get();
+        articleService.unfavourite(found);
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
 }
