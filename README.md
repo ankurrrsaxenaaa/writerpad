@@ -281,3 +281,16 @@ This should return following response
 
 You need to look into the tags marked in an article. Tags metrics should not differentiate based on casing. 'Java','java', 'JAVA', 'JaVA' etc, should be considered one for determining count.
 
+## Day 7
+
+### Story 15:  Favourite an article
+
+You have to design it yourself
+
+Favourite count should change
+
+### Story 16:  Unfavourite an article
+
+You have to design it yourself
+
+Favourite count should change
