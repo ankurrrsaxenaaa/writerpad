@@ -263,7 +263,7 @@ The speed of average human should be configurable.
 
 ## Day 6
 
-### Story 14 : Generate Tag based metrics 
+### Story 14: Generate Tag based metrics 
 You have to define a REST endpoint that will provide all tags, provided in all articles, with their occurance.
 
 ```
@@ -294,3 +294,44 @@ Favourite count should change
 You have to design it yourself
 
 Favourite count should change
+
+## Day 8
+
+### Story 17: Only logged in users can create an article
+
+You need to define mapping between user and article in the domain classes.
+
+The article response need to be changed to below.
+
+```json
+{
+    "id": "a98fd991e69a",
+    "slug": "how-to-learn-spring-boot-by-building-an-app",
+    "title": "How to learn Spring Booot",
+    "description": "Ever wonder how?",
+    "body": "You have to believe",
+    "tags": ["java", "spring-boot","tutorial"],
+    "createdAt": "2019-11-24T03:22:56.637Z",
+    "updatedAt": "2019-11-25T03:48:35.824Z",
+    "favorited": false,
+    "favoritesCount": 0,
+    "author": {
+    "username":"shekhargulati",
+    "fullName" : "Shekhar Gulati"
+    }
+}
+```
+
+## Day 9
+
+## Story 18: User can only update articles that they created
+
+In this story, you have to fix the update functionality to consider user
+
+Create two articles one by user `u1` and another by user `u2`. If `u2` tries to update article created by `u1` then they should get an error response `403`.
+
+### Story 19: User can only delete articles that they created
+
+In this story, you have to fix the delete functionality to consider user.
+
+Create two articles one by user `u1` and another by user `u2`. If `u2` tries to delete article created by `u1` then they should get an error response `403`.
