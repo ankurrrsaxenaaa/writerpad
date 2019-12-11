@@ -177,13 +177,16 @@ public class Article {
                 + "id=" + id
                 + ", title='" + title + '\''
                 + ", description='" + description + '\''
-                + ", body='"
-                + body + '\''
-                + ", tags=" + (tags).toString()
+                + ", body='" + body + '\''
+                + ", tags=" + tags
+                + ", slug='" + slug + '\''
                 + ", createdAt=" + createdAt
                 + ", updatedAt=" + updatedAt
                 + ", favorited=" + favorited
                 + ", favoritesCount=" + favoritesCount
+                + ", status=" + status
+                + ", user=" + user
+                + ", comments=" + comments
                 + '}';
     }
 

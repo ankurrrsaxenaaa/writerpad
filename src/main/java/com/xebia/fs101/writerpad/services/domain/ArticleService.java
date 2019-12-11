@@ -46,7 +46,7 @@ public class ArticleService {
 
     public Article update(String slugUuid, Article copyFrom, User user) {
         Article article = findBySlugId(slugUuid);
-        if (article.getUser().getUsername().equals(user.getUsername())) {
+        if (!article.getUser().getUsername().equals(user.getUsername())) {
             throw new UnauthorizedUserException();
         }
         article.update(copyFrom);

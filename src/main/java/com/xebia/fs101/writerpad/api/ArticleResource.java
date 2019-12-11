@@ -10,12 +10,12 @@ import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
 import com.xebia.fs101.writerpad.services.helpers.EmailService;
 import com.xebia.fs101.writerpad.services.helpers.TimeService;
+import com.xebia.fs101.writerpad.services.security.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -53,7 +53,7 @@ public class ArticleResource {
 
     @PostMapping
     public ResponseEntity<ArticleResponse> create(
-            @AuthenticationPrincipal User user,
+            @CurrentUser User user,
             @Valid @RequestBody ArticleRequest articleRequest) {
         Article toSave = articleRequest.toArticle();
         Article saved = articleService.save(toSave, user);
@@ -64,10 +64,9 @@ public class ArticleResource {
 
     @PatchMapping("/{slugUuid}")
     public ResponseEntity<ArticleResponse> update(
-            @AuthenticationPrincipal User user,
+            @CurrentUser User user,
             @RequestBody ArticleRequest articleRequest,
             @PathVariable("slugUuid") String slugUuid) {
-        System.out.println(articleRequest.toString());
         Article copyFrom = articleRequest.toArticle();
         Article updatedArticle = articleService.update(slugUuid, copyFrom, user);
         return ResponseEntity
@@ -116,7 +115,7 @@ public class ArticleResource {
 
     @DeleteMapping("/{slugUuid}")
     public ResponseEntity<Void> delete(
-            @AuthenticationPrincipal User user,
+            @CurrentUser User user,
             @PathVariable("slugUuid") String slugUuid) {
         articleService.delete(slugUuid, user);
         return ResponseEntity.status(NO_CONTENT).build();
