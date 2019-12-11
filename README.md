@@ -56,7 +56,7 @@ Response
        "createdAt": "2019-11-24T03:22:56.637Z",
        "updatedAt": "2019-11-24T03:48:35.824Z",
        "favorited": false,
-       "favoritesCount": 0,
+       "favoritesCount": 0
    }
    ```
 
@@ -72,7 +72,7 @@ The body of the patch is shown below:
 
 ```json
 {
-    "title": "How to learn Spring Boot by building an app",
+    "title": "How to learn Spring Boot by building an app"
 }
 ```
 
@@ -93,7 +93,7 @@ Returns the updated article.
     "createdAt": "2019-11-24T03:22:56.637Z",
     "updatedAt": "2019-11-25T03:48:35.824Z",
     "favorited": false,
-    "favoritesCount": 0,
+    "favoritesCount": 0
 }
 ```
 
@@ -114,7 +114,7 @@ This returns single article
     "createdAt": "2019-11-24T03:22:56.637Z",
     "updatedAt": "2019-11-25T03:48:35.824Z",
     "favorited": false,
-    "favoritesCount": 0,
+    "favoritesCount": 0
 }
 ```
 
@@ -335,3 +335,41 @@ Create two articles one by user `u1` and another by user `u2`. If `u2` tries to 
 In this story, you have to fix the delete functionality to consider user.
 
 Create two articles one by user `u1` and another by user `u2`. If `u2` tries to delete article created by `u1` then they should get an error response `403`.
+
+## Day 10
+
+### Story 20: A user should not be able to submit article with same body twice
+
+In this story, we are implementing a simple copy paste detector.  If a same or different user tries to submit article with the body that already exist then you should return bad request to the user.
+
+For example if user `u1 ` creates an article with body `hello, world` and then `u1` or `u2` tries to create another article article with body `hello, world`  then HTTP 400 should be returned.
+
+You have to do this check in both create and update API
+
+You can use https://github.com/rrice/java-string-similarity library to find the text similarity. If two strings are similar i.e. their similarity score is greater than 70% then you should return 400.
+
+### Story 21: Find the random image using the Unsplash API and make it featured image of the article
+
+We want to add functionality to our API where we want to randomly assign image to our article.
+
+Go to this https://source.unsplash.com/ to learn how to find random image. Save that in the image field of the article.
+
+```json
+{
+    "id": "a98fd991e69a",
+    "slug": "how-to-learn-spring-boot-by-building-an-app",
+    "title": "How to learn Spring Booot",
+    "description": "Ever wonder how?",
+    "body": "You have to believe",
+    "tags": ["java", "spring-boot","tutorial"],
+    "createdAt": "2019-11-24T03:22:56.637Z",
+    "updatedAt": "2019-11-25T03:48:35.824Z",
+    "favorited": false,
+    "favoritesCount": 0,
+	  "image": "https://images.unsplash.com/photo-1575931140251-cefba6c2b4e9?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max",
+    "author": {
+    "username":"shekhargulati",
+    "fullName" : "Shekhar Gulati"
+    }
+}
+```
