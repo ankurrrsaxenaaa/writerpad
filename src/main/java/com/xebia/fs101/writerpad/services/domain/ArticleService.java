@@ -1,7 +1,9 @@
-package com.xebia.fs101.writerpad.services;
+package com.xebia.fs101.writerpad.services.domain;
 
 import com.xebia.fs101.writerpad.domain.Article;
+import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
+import com.xebia.fs101.writerpad.repository.UserRepository;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import com.xebia.fs101.writerpad.utilities.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,14 @@ public class ArticleService {
     @Autowired
     private ArticleRepository articleRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
-    public Article save(Article article) {
+
+    public Article save(Article article, User user) {
+        Optional<User> optionalUser = userRepository.findById(user.getId());
+        User found = optionalUser.get();
+        article.setUser(found);
         article.setSlug(StringUtil.generateSlug(article.getTitle()));
         article.setUpdatedAt();
         this.articleRepository.save(article);

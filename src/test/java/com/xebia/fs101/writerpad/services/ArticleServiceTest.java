@@ -1,7 +1,10 @@
 package com.xebia.fs101.writerpad.services;
 
 import com.xebia.fs101.writerpad.domain.Article;
+import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
+import com.xebia.fs101.writerpad.repository.UserRepository;
+import com.xebia.fs101.writerpad.services.domain.ArticleService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +27,8 @@ import static org.mockito.Mockito.when;
 class ArticleServiceTest {
     @Mock
     private ArticleRepository articleRepository;
+    @Mock
+    private UserRepository userRepository;
     @InjectMocks
     private ArticleService articleService;
 
@@ -82,6 +87,7 @@ class ArticleServiceTest {
         verify(articleRepository).findById(any());
     }
 
+
     @Test
     void verify_save() {
         Article article = new Article.Builder()
@@ -89,7 +95,11 @@ class ArticleServiceTest {
                 .setBody("Body")
                 .setDescription("Description")
                 .build();
-        articleService.save(article);
+        User user = new User("ankursaxena","ankur.saxena@xebia.com","p@ssw0rd");
+        user.setId(UUID.randomUUID());
+        article.setUser(user);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        articleService.save(article, user);
         verify(articleRepository).save(any());
     }
 

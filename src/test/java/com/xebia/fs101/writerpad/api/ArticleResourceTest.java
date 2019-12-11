@@ -2,19 +2,25 @@ package com.xebia.fs101.writerpad.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.writerpad.api.representations.ArticleRequest;
+import com.xebia.fs101.writerpad.api.representations.UserRequest;
 import com.xebia.fs101.writerpad.domain.Article;
+import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
-import com.xebia.fs101.writerpad.services.EmailService;
+import com.xebia.fs101.writerpad.repository.UserRepository;
+import com.xebia.fs101.writerpad.services.helpers.EmailService;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +28,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,13 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser
 public class ArticleResourceTest {
-
-    @AfterEach
-    void tearDown() {
-        commentRepository.deleteAll();
-        articleRepository.deleteAll();
-    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,11 +52,35 @@ public class ArticleResourceTest {
     private ArticleRepository articleRepository;
 
     @Autowired
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @MockBean
-    EmailService emailService;
+    private EmailService emailService;
+
+    private User user;
+
+    @AfterEach
+    void tearDown() {
+        commentRepository.deleteAll();
+        articleRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+    @BeforeEach
+    void setUp() {
+        UserRequest userRequest = new UserRequest(
+                "ankursaxena",
+                "ankur.saxena@xebia.com",
+                "p@ssw0rd");
+        user = userRequest.toUser(passwordEncoder);
+        userRepository.save(user);
+    }
 
     @Test
     void mock_mvc_should_be_set() {
@@ -71,8 +97,9 @@ public class ArticleResourceTest {
                 .build();
         String json = objectMapper.writeValueAsString(articleRequest);
         mockMvc.perform(post("/api/articles")
-                .accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -99,7 +126,9 @@ public class ArticleResourceTest {
         String json = objectMapper.writeValueAsString(articleRequest);
         mockMvc.perform(post("/api/articles")
                 .accept(MediaType.APPLICATION_JSON)
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -128,7 +157,8 @@ public class ArticleResourceTest {
         mockMvc.perform(post("/api/articles")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -145,7 +175,8 @@ public class ArticleResourceTest {
         mockMvc.perform(post("/api/articles")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andExpect(status().isBadRequest());
     }
 
@@ -155,15 +186,18 @@ public class ArticleResourceTest {
                 .setTitle("Okay life!")
                 .build();
         String json = objectMapper.writeValueAsString(articleRequest);
-        Article saved = articleRepository.save(new Article.Builder()
+        Article article = new Article.Builder()
                 .setBody("abc")
                 .setDescription("abc")
                 .setTitle("abc")
-                .build());
+                .build();
+        article.setUser(user);
+        Article saved = articleRepository.save(article);
         mockMvc.perform(patch("/api/articles/{slug_uuid}", "abc" + "-" + saved.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Okay life!"))
                 .andExpect(jsonPath("$.body").value("abc"))
@@ -176,15 +210,19 @@ public class ArticleResourceTest {
                 .setTitle("Okay life!")
                 .build();
         String json = objectMapper.writeValueAsString(articleRequest);
-        Article saved = articleRepository.save(new Article.Builder()
+        Article article = new Article.Builder()
                 .setBody("abc")
                 .setDescription("abc")
                 .setTitle("abc")
-                .build());
+                .build();
+        article.setUser(user);
+        Article saved = articleRepository.save(article);
+
         mockMvc.perform(patch("/api/articles/{slug_uuid}", "abc" + "-" + saved.getId() + "abc")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(json)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andExpect(status().isNotFound());
     }
 
@@ -192,8 +230,11 @@ public class ArticleResourceTest {
     @Test
     void should_list_all_articles() throws Exception {
         Article article1 = createArticle("Title1", "Description1", "body1");
+        article1.setUser(user);
         Article article2 = createArticle("Title2", "description2", "body2");
+        article2.setUser(user);
         Article article3 = createArticle("Title3", "description3", "body3");
+        article3.setUser(user);
 
         articleRepository.saveAll(Arrays.asList(article1, article2, article3));
 
@@ -201,15 +242,16 @@ public class ArticleResourceTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3));
-
-
     }
 
     @Test
     void should_list_all_articles_with_pagination() throws Exception {
         Article article1 = createArticle("Title1", "Description1", "body1");
+        article1.setUser(user);
         Article article2 = createArticle("Title2", "description2", "body2");
+        article2.setUser(user);
         Article article3 = createArticle("Title3", "description3", "body3");
+        article3.setUser(user);
 
         articleRepository.saveAll(Arrays.asList(article1, article2, article3));
 
@@ -229,7 +271,8 @@ public class ArticleResourceTest {
         String json = objectMapper.writeValueAsString(articleRequest);
         mockMvc.perform(post("/api/articles/")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                .content(json)
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -245,11 +288,13 @@ public class ArticleResourceTest {
     }
 
     @Test
-    void should_return_an_articles_by_status_with_id() throws Exception {
+    void should_return_a_articles_by_status_with_id() throws Exception {
         Article article = createArticle("Title 1", "Description 1", "Body 1");
         article.setUpdatedAt();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
-        mockMvc.perform(get("/api/articles/{slugUuid}", "great-world-" + saved.getId()))
+        mockMvc.perform(get("/api/articles/{slugUuid}", "great-world-" + saved.getId())
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -267,9 +312,12 @@ public class ArticleResourceTest {
     @Test
     void should_list_all_articles_by_status_code_and_status_code_is_DRAFT() throws Exception {
         Article article = createArticle("Title 1", "Description 1", "Body 1");
+        article.setUser(user);
         Article article2 = createArticle("Title 1", "Description 1", "Body 1");
+        article2.setUser(user);
         articleRepository.saveAll(Arrays.asList(article, article2));
-        mockMvc.perform(get("/api/articles?status=DRAFT", "DRAFT"))
+        mockMvc.perform(get("/api/articles?status=DRAFT", "DRAFT")
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
@@ -278,9 +326,11 @@ public class ArticleResourceTest {
     @Test
     void should_be_able_to_publish_the_article() throws Exception {
         Article article = createArticle("Title 1", "Description 1", "Body 1");
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         doNothing().when(emailService).sendEmail(article);
-        mockMvc.perform(post("/api/articles/{slugUuid}/PUBLISH", "title-1" + saved.getId()))
+        mockMvc.perform(post("/api/articles/{slugUuid}/PUBLISH", "title-1" + saved.getId())
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -289,10 +339,12 @@ public class ArticleResourceTest {
     void should_return_400_when_status_is_changed_to_published_of_an_already_published_article() throws Exception {
         Article article = createArticle("Title 1", "Description 1", "Body 1");
         article.setUpdatedAt();
+        article.setUser(user);
         article.setStatus(ArticleStatus.PUBLISHED);
         Article saved = articleRepository.save(article);
         doNothing().when(emailService).sendEmail(article);
-        mockMvc.perform(post("/api/articles/{sluguuid}/PUBLISH", "title-1-" + saved.getId()))
+        mockMvc.perform(post("/api/articles/{sluguuid}/PUBLISH", "title-1-" + saved.getId())
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -303,6 +355,7 @@ public class ArticleResourceTest {
                 "Description 1",
                 "This is a really really really really really really really really really really long sentence");
         article.setUpdatedAt();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         mockMvc.perform(get("/api/articles/{slugUuid}/timetoread", "title1-" + saved.getId()))
                 .andDo(print())
@@ -321,12 +374,14 @@ public class ArticleResourceTest {
                 .setDescription("Description 1")
                 .setTags(Arrays.asList("java", "boot", "spring"))
                 .build();
+        article1.setUser(user);
         Article article2 = new Article.Builder()
                 .setTitle("Title 1")
                 .setBody("Body 1")
                 .setDescription("Description 1")
                 .setTags(Arrays.asList("JaVa", "first blog", " spring"))
                 .build();
+        article2.setUser(user);
         articleRepository.saveAll(Arrays.asList(article1, article2));
         mockMvc.perform(get("/api/articles/tags"))
                 .andDo(print())
@@ -334,6 +389,7 @@ public class ArticleResourceTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(4));
     }
+
 
     private Article createArticle(String title, String description, String body) {
         return new Article.Builder()

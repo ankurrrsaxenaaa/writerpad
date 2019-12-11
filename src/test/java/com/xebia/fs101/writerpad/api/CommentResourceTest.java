@@ -2,16 +2,22 @@ package com.xebia.fs101.writerpad.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.writerpad.api.representations.CommentRequest;
+import com.xebia.fs101.writerpad.api.representations.UserRequest;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.Comment;
+import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
+import com.xebia.fs101.writerpad.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
@@ -26,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@WithMockUser
 class CommentResourceTest {
     @Autowired
     private MockMvc mockMvc;
@@ -35,6 +42,12 @@ class CommentResourceTest {
     private ObjectMapper objectMapper;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
+
+    private User user;
 
     private String getSlugUuid(Article saved) {
         return saved.getTitle() + "-" + saved.getId();
@@ -53,6 +66,16 @@ class CommentResourceTest {
     void tearDown() {
         commentRepository.deleteAll();
         articleRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+    @BeforeEach
+    void setUp() {
+        UserRequest userRequest = new UserRequest(
+                "ankursaxena",
+                "ankur.saxena@xebia.com",
+                "p@ssw0rd");
+        user = userRequest.toUser(passwordEncoder);
+        userRepository.save(user);
     }
 
     @Test
@@ -63,6 +86,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_201_status_for_post_ops_when_comment_has_mandatory_data() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         String json = objectMapper.writeValueAsString(new CommentRequest("Beautiful comment"));
         Article saved = articleRepository.save(article);
         String id = getSlugUuid(saved);
@@ -77,6 +101,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_400_status_for_post_ops_when_comment_is_blank() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         String json = objectMapper.writeValueAsString(new CommentRequest(""));
         Article saved = articleRepository.save(article);
         String id = getSlugUuid(saved);
@@ -91,6 +116,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_404_status_for_post_ops_when_article_is_not_found() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         String json = objectMapper.writeValueAsString(new CommentRequest("Yeah"));
         Article saved = articleRepository.save(article);
         String id = getSlugUuid(saved) + "abc";
@@ -105,6 +131,7 @@ class CommentResourceTest {
     @Test
     void should_return_400_status_for_post_ops_when_body_data_contain_spam_words() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String slugUuid = getSlugUuid(saved);
         CommentRequest request = new CommentRequest("Hello world! semen");
@@ -119,6 +146,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_201_status_and_all_comments() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         Comment comment1 = new Comment.Builder()
                 .setArticle(article)
                 .setBody("yeah1")
@@ -142,6 +170,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_404_status_for_get_ops_when_article_is_not_present() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = "great-world-" + saved.getId() + "abc";
         mockMvc.perform(get("/api/articles/{slugUuid}/comments", id)
@@ -153,6 +182,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_404_status_for_delete_operation_when_article_is_not_present() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         String id = "great-world-" + saved.getId() + "abc";
         mockMvc.perform(delete("/api/articles/{slugUuid}/comments/{id}", id, 1L)
@@ -164,6 +194,7 @@ class CommentResourceTest {
     @Test
     void should_be_able_to_return_204_status_for_delete_operation() throws Exception {
         Article article = getArticle();
+        article.setUser(user);
         Article saved = articleRepository.save(article);
         Comment comment1 = new Comment.Builder()
                 .setArticle(saved)

@@ -1,7 +1,8 @@
-package com.xebia.fs101.writerpad.services;
+package com.xebia.fs101.writerpad.services.domain;
 
 import com.xebia.fs101.writerpad.domain.Comment;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
+import com.xebia.fs101.writerpad.services.helpers.SpamChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

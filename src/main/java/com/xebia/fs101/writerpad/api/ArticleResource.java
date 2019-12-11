@@ -1,18 +1,21 @@
 package com.xebia.fs101.writerpad.api;
 
 import com.xebia.fs101.writerpad.api.representations.ArticleRequest;
+import com.xebia.fs101.writerpad.api.representations.ArticleResponse;
 import com.xebia.fs101.writerpad.api.representations.TagResponse;
 import com.xebia.fs101.writerpad.api.representations.TimeToRead;
 import com.xebia.fs101.writerpad.api.representations.TimeToReadResponse;
 import com.xebia.fs101.writerpad.domain.Article;
-import com.xebia.fs101.writerpad.services.ArticleService;
-import com.xebia.fs101.writerpad.services.EmailService;
-import com.xebia.fs101.writerpad.services.TimeService;
+import com.xebia.fs101.writerpad.domain.User;
+import com.xebia.fs101.writerpad.services.domain.ArticleService;
+import com.xebia.fs101.writerpad.services.helpers.EmailService;
+import com.xebia.fs101.writerpad.services.helpers.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -50,13 +53,14 @@ public class ArticleResource {
     TimeService timeService;
 
     @PostMapping
-    public ResponseEntity<Article> create(@Valid
-                                          @RequestBody ArticleRequest articleRequest) {
+    public ResponseEntity<ArticleResponse> create(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ArticleRequest articleRequest) {
         Article toSave = articleRequest.toArticle();
-        Article saved = articleService.save(toSave);
+        Article saved = articleService.save(toSave, user);
         return ResponseEntity
                 .status(CREATED)
-                .body(saved);
+                .body(ArticleResponse.from(saved));
     }
 
     @PatchMapping("/{slugUuid}")

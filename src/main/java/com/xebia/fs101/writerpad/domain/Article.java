@@ -1,6 +1,7 @@
 package com.xebia.fs101.writerpad.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import com.xebia.fs101.writerpad.utilities.StringUtil;
 
@@ -12,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -50,10 +52,21 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     private ArticleStatus status = ArticleStatus.DRAFT;
+    @JsonManagedReference
+    @ManyToOne(optional = false)
+    private User user;
 
     @OneToMany(mappedBy = "article")
     @JsonBackReference
     private List<Comment> comments;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public List<Comment> getComments() {
         return comments;
