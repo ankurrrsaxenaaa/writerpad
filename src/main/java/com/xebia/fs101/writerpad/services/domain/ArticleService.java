@@ -2,6 +2,8 @@ package com.xebia.fs101.writerpad.services.domain;
 
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.User;
+import com.xebia.fs101.writerpad.exceptions.ArticleNotFoundException;
+import com.xebia.fs101.writerpad.exceptions.UnauthorizedUserException;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
@@ -31,9 +33,9 @@ public class ArticleService {
     private UserRepository userRepository;
 
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     public Article save(Article article, User user) {
-        Optional<User> optionalUser = userRepository.findById(user.getId());
-        User found = optionalUser.get();
+        User found = userRepository.findById(user.getId()).get();
         article.setUser(found);
         article.setSlug(StringUtil.generateSlug(article.getTitle()));
         article.setUpdatedAt();
@@ -42,19 +44,22 @@ public class ArticleService {
     }
 
 
-    public Optional<Article> update(String slugUuid, Article copyFrom) {
-        Optional<Article> optionalArticle = findBySlugId(slugUuid);
-        if (!optionalArticle.isPresent()) {
-            return Optional.empty();
+    public Article update(String slugUuid, Article copyFrom, User user) {
+        Article article = findBySlugId(slugUuid);
+        if (article.getUser().getUsername().equals(user.getUsername())) {
+            throw new UnauthorizedUserException();
         }
-        Article article = optionalArticle.get();
         article.update(copyFrom);
-        return Optional.of(articleRepository.save(article));
+        return articleRepository.save(article);
     }
 
-    public Optional<Article> findBySlugId(String slugID) {
+    public Article findBySlugId(String slugID) {
         UUID id = extractId(slugID);
-        return this.articleRepository.findById(id);
+        Optional<Article> optionalArticle = this.articleRepository.findById(id);
+        if (!optionalArticle.isPresent()) {
+            throw new ArticleNotFoundException();
+        }
+        return optionalArticle.get();
     }
 
     public Optional<Article> find(String slugUuid) {
@@ -62,8 +67,12 @@ public class ArticleService {
         return this.articleRepository.findById(id);
     }
 
-    public void delete(UUID id) {
-        this.articleRepository.deleteById(id);
+    public void delete(String slugUuid, User user) {
+        Article article = findBySlugId(slugUuid);
+        if (!article.getUser().getUsername().equals(user.getUsername())) {
+            throw new UnauthorizedUserException();
+        }
+        this.articleRepository.deleteById(extractId(slugUuid));
     }
 
     public Page<Article> findAll(Pageable pageable) {

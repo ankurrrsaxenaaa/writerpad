@@ -5,6 +5,7 @@ import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,57 +33,51 @@ class ArticleServiceTest {
     @InjectMocks
     private ArticleService articleService;
 
-    @Test
-    void should_return_an_empty_optional_when_article_id_is_wrong() {
-        Article copyFrom = new Article.Builder()
-                .setBody("Aba")
-                .setTitle("abc")
-                .setDescription("abc")
-                .build();
-        String slugUuid = "abc" + UUID.randomUUID();
-        when(articleRepository.findById(extractId(slugUuid))).thenReturn(Optional.empty());
-        articleService.update(slugUuid, copyFrom);
-        verify(articleRepository).findById(any());
-        verifyNoMoreInteractions(articleRepository);
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        this.user = new User("ankursaxena", "ankur.saxena@xebia.com", "p@ssw0rd");
+        this.user.setId(UUID.randomUUID());
     }
 
-    @Test
-    void should_return_an_optional_article_object() {
-        Article copyFrom = new Article.Builder()
-                .setBody("Aba")
-                .setTitle("abc")
-                .setDescription("abc")
-                .build();
-        String slugUuid = "abc-" + UUID.randomUUID().toString();
-        Article article = new Article();
-        when(articleRepository.findById(extractId(slugUuid))).thenReturn(Optional.of(article));
-        when(articleRepository.save(article)).thenReturn(article);
-        articleService.update(slugUuid, copyFrom);
-        verify(articleRepository).findById(extractId(slugUuid));
-        verify(articleRepository).save(article);
-    }
 
     @Test
     void should_be_able_delete_an_article() {
+        Article article = new Article.Builder()
+                .setBody("Aba")
+                .setTitle("abc")
+                .setDescription("abc")
+                .build();
+        article.setUser(user);
         String slugUuid = "abc-" + UUID.randomUUID();
-        when(articleRepository.findById(extractId(slugUuid))).thenReturn(Optional.of(new Article()));
+        when(articleRepository.findById(extractId(slugUuid))).thenReturn(Optional.of(article));
         doNothing().when(articleRepository).deleteById(extractId(slugUuid));
-        articleService.findBySlugId(slugUuid);
-        articleService.delete(extractId(slugUuid));
+        articleService.delete(slugUuid, user);
         verify(articleRepository).findById(extractId(slugUuid));
         verify(articleRepository).deleteById(extractId(slugUuid));
     }
 
     @Test
     void should_not_be_able_delete_an_article_when_id_is_wrong() {
+        Article article = new Article.Builder()
+                .setBody("Aba")
+                .setTitle("abc")
+                .setDescription("abc")
+                .build();
+        article.setUser(user);
         String slugUuid = "abc-" + UUID.randomUUID();
-        articleService.delete(extractId(slugUuid));
-        verify(articleRepository).deleteById((extractId(slugUuid)));
+        when(articleRepository.findById(any())).thenReturn(Optional.of(article));
+        articleService.delete(slugUuid, user);
+        verify(articleRepository).findById(any());
+        verify(articleRepository).deleteById(any());
         verifyNoMoreInteractions(articleRepository);
     }
 
     @Test
     void verify_findbyid() {
+
+        when(articleRepository.findById(any())).thenReturn(Optional.of(new Article()));
         articleService.findBySlugId(UUID.randomUUID().toString());
         verify(articleRepository).findById(any());
     }
@@ -95,8 +90,6 @@ class ArticleServiceTest {
                 .setBody("Body")
                 .setDescription("Description")
                 .build();
-        User user = new User("ankursaxena","ankur.saxena@xebia.com","p@ssw0rd");
-        user.setId(UUID.randomUUID());
         article.setUser(user);
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
         articleService.save(article, user);

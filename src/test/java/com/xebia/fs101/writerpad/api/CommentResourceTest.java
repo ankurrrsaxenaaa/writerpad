@@ -68,6 +68,7 @@ class CommentResourceTest {
         articleRepository.deleteAll();
         userRepository.deleteAll();
     }
+
     @BeforeEach
     void setUp() {
         UserRequest userRequest = new UserRequest(

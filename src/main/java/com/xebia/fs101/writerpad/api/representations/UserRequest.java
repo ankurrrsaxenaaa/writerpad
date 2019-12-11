@@ -43,7 +43,9 @@ public class UserRequest {
         this.password = password;
     }
 
-    public UserRequest(@NotBlank String username, @NotBlank String email, @NotBlank String password) {
+    public UserRequest(@NotBlank String username,
+                       @NotBlank String email,
+                       @NotBlank String password) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -58,7 +60,7 @@ public class UserRequest {
                 + '}';
     }
 
-    public User toUser(PasswordEncoder passwordEncoder){
+    public User toUser(PasswordEncoder passwordEncoder) {
         return new User(this.username, this.email, passwordEncoder.encode(this.password));
     }
 }

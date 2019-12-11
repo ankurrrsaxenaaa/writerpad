@@ -20,12 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -39,7 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@WithMockUser
 public class ArticleResourceTest {
 
     @Autowired
@@ -84,7 +83,7 @@ public class ArticleResourceTest {
 
     @Test
     void mock_mvc_should_be_set() {
-        Assertions.assertThat(mockMvc).isNotNull();
+        assertThat(mockMvc).isNotNull();
     }
 
 
@@ -238,7 +237,8 @@ public class ArticleResourceTest {
 
         articleRepository.saveAll(Arrays.asList(article1, article2, article3));
 
-        this.mockMvc.perform(get("/api/articles"))
+        this.mockMvc.perform(get("/api/articles")
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3));
@@ -255,7 +255,8 @@ public class ArticleResourceTest {
 
         articleRepository.saveAll(Arrays.asList(article1, article2, article3));
 
-        this.mockMvc.perform(get("/api/articles?pageNo=0&pageSize=1"))
+        this.mockMvc.perform(get("/api/articles?pageNo=0&pageSize=1")
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
@@ -357,7 +358,10 @@ public class ArticleResourceTest {
         article.setUpdatedAt();
         article.setUser(user);
         Article saved = articleRepository.save(article);
-        mockMvc.perform(get("/api/articles/{slugUuid}/timetoread", "title1-" + saved.getId()))
+        mockMvc.perform(
+                get("/api/articles/{slugUuid}/timetoread",
+                        "title1-" + saved.getId())
+                        .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articleId").isNotEmpty())
@@ -383,7 +387,8 @@ public class ArticleResourceTest {
                 .build();
         article2.setUser(user);
         articleRepository.saveAll(Arrays.asList(article1, article2));
-        mockMvc.perform(get("/api/articles/tags"))
+        mockMvc.perform(get("/api/articles/tags")
+                .with(httpBasic("ankursaxena", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
