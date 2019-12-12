@@ -1,7 +1,7 @@
-package com.xebia.fs101.writerpad.services;
+package com.xebia.fs101.writerpad.helpers.email;
 
 import com.xebia.fs101.writerpad.domain.Article;
-import com.xebia.fs101.writerpad.services.helpers.EmailService;
+import com.xebia.fs101.writerpad.services.helpers.email.EmailService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

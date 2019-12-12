@@ -5,6 +5,7 @@ import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
+import com.xebia.fs101.writerpad.services.helpers.image.ImageFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ class ArticleServiceTest {
     private ArticleRepository articleRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private ImageFinder imageFinder;
     @InjectMocks
     private ArticleService articleService;
 
@@ -91,6 +94,7 @@ class ArticleServiceTest {
                 .setDescription("Description")
                 .build();
         article.setUser(user);
+        when(imageFinder.findRandomImage()).thenReturn("");
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
         articleService.save(article, user);
         verify(articleRepository).save(any());

@@ -8,7 +8,7 @@ import com.xebia.fs101.writerpad.api.representations.TimeToReadResponse;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
-import com.xebia.fs101.writerpad.services.helpers.EmailService;
+import com.xebia.fs101.writerpad.services.helpers.email.EmailService;
 import com.xebia.fs101.writerpad.services.helpers.TimeService;
 import com.xebia.fs101.writerpad.services.security.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;

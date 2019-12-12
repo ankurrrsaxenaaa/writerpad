@@ -40,6 +40,7 @@ public class Article {
     @ElementCollection
     private List<String> tags;
     private String slug;
+    private String image;
 
     @Column(updatable = false, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -82,6 +83,13 @@ public class Article {
         setFavoritesCount(builder.favoritesCount);
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String imageUrl) {
+        this.image = imageUrl;
+    }
 
     public ArticleStatus getStatus() {
         return status;

@@ -8,7 +8,8 @@ import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
-import com.xebia.fs101.writerpad.services.helpers.EmailService;
+import com.xebia.fs101.writerpad.services.helpers.email.EmailService;
+import com.xebia.fs101.writerpad.services.helpers.image.ImageFinder;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,9 @@ public class ArticleResourceTest {
     @MockBean
     private EmailService emailService;
 
+    @Autowired
+    private ImageFinder imageFinder;
+
     private User user;
 
     @AfterEach
@@ -109,6 +113,7 @@ public class ArticleResourceTest {
                 .andExpect(jsonPath("$.updatedAt").isNotEmpty())
                 .andExpect(jsonPath("$.favorited").isBoolean())
                 .andExpect(jsonPath("$.favorited").value(false))
+                .andExpect(jsonPath("$.image").exists())
                 .andExpect(jsonPath("$.favoritesCount").value(0));
     }
 
@@ -202,6 +207,7 @@ public class ArticleResourceTest {
                 .andExpect(jsonPath("$.body").value("abc"))
                 .andExpect(jsonPath("$.description").value("abc"));
     }
+
     @Test
     void should_be_able_to_return_404_status_code_for_patch_operation_when_id_is_wrong() throws Exception {
         ArticleRequest articleRequest = new ArticleRequest.Builder()

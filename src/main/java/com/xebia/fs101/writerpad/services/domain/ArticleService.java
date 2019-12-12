@@ -6,6 +6,7 @@ import com.xebia.fs101.writerpad.exceptions.ArticleNotFoundException;
 import com.xebia.fs101.writerpad.exceptions.UnauthorizedUserException;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
+import com.xebia.fs101.writerpad.services.helpers.image.ImageFinder;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 import com.xebia.fs101.writerpad.utilities.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,15 @@ public class ArticleService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    ImageFinder imageFinder;
+
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     public Article save(Article article, User user) {
         User found = userRepository.findById(user.getId()).get();
         article.setUser(found);
+        article.setImage(imageFinder.findRandomImage());
         article.setSlug(StringUtil.generateSlug(article.getTitle()));
         article.setUpdatedAt();
         this.articleRepository.save(article);

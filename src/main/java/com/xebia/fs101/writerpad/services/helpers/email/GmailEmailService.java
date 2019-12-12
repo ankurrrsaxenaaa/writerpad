@@ -1,4 +1,4 @@
-package com.xebia.fs101.writerpad.services.helpers;
+package com.xebia.fs101.writerpad.services.helpers.email;
 
 import com.xebia.fs101.writerpad.domain.Article;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,10 @@ public class GmailEmailService implements EmailService {
     @Autowired
     JavaMailSender javaMailSender;
 
-    @Value("email.to")
+    @Value("${email.to}")
     String emailTo;
 
-    @Value("email.subject")
+    @Value("${email.subject}")
     String emailSubject;
 
     Article article;

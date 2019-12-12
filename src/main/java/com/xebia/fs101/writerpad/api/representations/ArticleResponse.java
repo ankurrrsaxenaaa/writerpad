@@ -19,6 +19,7 @@ public class ArticleResponse {
     private long favoritesCount;
     private UserResponse author;
     private ArticleStatus status;
+    private String image;
 
     private ArticleResponse(Builder builder) {
         id = builder.id;
@@ -33,6 +34,7 @@ public class ArticleResponse {
         favoritesCount = builder.favoritesCount;
         author = builder.author;
         status = builder.status;
+        image = builder.image;
     }
 
     public static ArticleResponse from(Article article) {
@@ -49,6 +51,7 @@ public class ArticleResponse {
                 .withFavoritesCount(article.getFavoritesCount())
                 .withFavorited(article.isFavorited())
                 .withStatus(article.getStatus())
+                .withImage(article.getImage())
                 .build();
     }
 
@@ -63,6 +66,14 @@ public class ArticleResponse {
         public String getUsername() {
             return username;
         }
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getId() {
@@ -126,6 +137,7 @@ public class ArticleResponse {
         private long favoritesCount;
         private UserResponse author;
         public ArticleStatus status;
+        public String image;
 
         public Builder() {
         }
@@ -137,6 +149,11 @@ public class ArticleResponse {
 
         public Builder withTitle(String val) {
             title = val;
+            return this;
+        }
+
+        public Builder withImage(String val) {
+            image = val;
             return this;
         }
 
