@@ -2,6 +2,7 @@ package com.xebia.fs101.writerpad.services;
 
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.User;
+import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
@@ -40,7 +41,11 @@ class ArticleServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.user = new User("ankursaxena", "ankur.saxena@xebia.com", "p@ssw0rd");
+        this.user = new User("ankursaxena",
+                "ankur.saxena@xebia.com",
+                "p@ssw0rd",
+                WriterpadRole.WRITER
+                );
         this.user.setId(UUID.randomUUID());
     }
 

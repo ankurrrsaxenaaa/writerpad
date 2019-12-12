@@ -1,10 +1,12 @@
 package com.xebia.fs101.writerpad.api.representations;
 
 import com.xebia.fs101.writerpad.domain.User;
+import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class UserRequest {
 
@@ -15,8 +17,18 @@ public class UserRequest {
     private String email;
     @NotBlank
     private String password;
+    @NotNull
+    private WriterpadRole role;
 
     public UserRequest() {
+    }
+
+    public WriterpadRole getRole() {
+        return role;
+    }
+
+    public void setRole(WriterpadRole role) {
+        this.role = role;
     }
 
     public String getUsername() {
@@ -45,10 +57,12 @@ public class UserRequest {
 
     public UserRequest(@NotBlank String username,
                        @NotBlank String email,
-                       @NotBlank String password) {
+                       @NotBlank String password,
+                       @NotBlank WriterpadRole role) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     @Override
@@ -57,10 +71,11 @@ public class UserRequest {
                 + "username='" + username + '\''
                 + ", email='" + email + '\''
                 + ", password='" + password + '\''
+                + ", role='" + role + '\''
                 + '}';
     }
 
     public User toUser(PasswordEncoder passwordEncoder) {
-        return new User(this.username, this.email, passwordEncoder.encode(this.password));
+        return new User(this.username, this.email, passwordEncoder.encode(this.password), this.role);
     }
 }

@@ -2,6 +2,7 @@ package com.xebia.fs101.writerpad.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xebia.fs101.writerpad.api.representations.UserRequest;
+import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import com.xebia.fs101.writerpad.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,10 @@ class UserResourceTest {
 
     @Test
     void should_register_a_user_if_credentials_are_valid() throws Exception {
-        UserRequest user = new UserRequest("ankursaxena26", "ankur.saxena@xebia.com", "123");
+        UserRequest user = new UserRequest("ankursaxena26",
+                "ankur.saxena@xebia.com",
+                "123",
+                WriterpadRole.WRITER);
         String json = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -49,7 +53,10 @@ class UserResourceTest {
 
     @Test
     void should_not_register_an_user_if_credentials_are_not_valid() throws Exception {
-        UserRequest user = new UserRequest("", "ankur.saxena@xebia.com", "123");
+        UserRequest user = new UserRequest("",
+                "ankur.saxena@xebia.com",
+                "123",
+                WriterpadRole.WRITER);
         String json = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -60,8 +67,14 @@ class UserResourceTest {
 
     @Test
     void should_not_register_an_user_if_credentials_are_same() throws Exception {
-        UserRequest user1 = new UserRequest("ankursaxena26", "ankur.saxena@xebia.com", "123");
-        UserRequest user2 = new UserRequest("ankursaxena2605", "ankur.saxena@xebia.com", "123");
+        UserRequest user1 = new UserRequest("ankursaxena26",
+                "ankur.saxena@xebia.com",
+                "123",
+                WriterpadRole.WRITER);
+        UserRequest user2 = new UserRequest("ankursaxena2605",
+                "ankur.saxena@xebia.com",
+                "123",
+                WriterpadRole.WRITER);
         String json1 = objectMapper.writeValueAsString(user1);
         String json2 = objectMapper.writeValueAsString(user2);
         mockMvc.perform(post("/api/users")

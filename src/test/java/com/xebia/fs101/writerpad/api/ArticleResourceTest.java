@@ -5,6 +5,7 @@ import com.xebia.fs101.writerpad.api.representations.ArticleRequest;
 import com.xebia.fs101.writerpad.api.representations.UserRequest;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.User;
+import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
@@ -79,7 +80,8 @@ public class ArticleResourceTest {
         UserRequest userRequest = new UserRequest(
                 "ankursaxena",
                 "ankur.saxena@xebia.com",
-                "p@ssw0rd");
+                "p@ssw0rd",
+                WriterpadRole.WRITER);
         user = userRequest.toUser(passwordEncoder);
         userRepository.save(user);
     }
@@ -331,26 +333,38 @@ public class ArticleResourceTest {
 
     @Test
     void should_be_able_to_publish_the_article() throws Exception {
+        User user1 = new User(
+                "ankursaxena1",
+                "ankur.saxena1@xebia.com",
+                passwordEncoder.encode("p@ssw0rd"),
+                WriterpadRole.EDITOR);
+        User savedUser = userRepository.save(user1);
         Article article = createArticle("Title 1", "Description 1", "Body 1");
-        article.setUser(user);
+        article.setUser(savedUser);
         Article saved = articleRepository.save(article);
         doNothing().when(emailService).sendEmail(article);
         mockMvc.perform(post("/api/articles/{slugUuid}/PUBLISH", "title-1" + saved.getId())
-                .with(httpBasic("ankursaxena", "p@ssw0rd")))
+                .with(httpBasic("ankursaxena1", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void should_return_400_when_status_is_changed_to_published_of_an_already_published_article() throws Exception {
+        User user1 = new User(
+                "ankursaxena1",
+                "ankur.saxena1@xebia.com",
+                passwordEncoder.encode("p@ssw0rd"),
+                WriterpadRole.EDITOR);
+        User savedUser = userRepository.save(user1);
         Article article = createArticle("Title 1", "Description 1", "Body 1");
         article.setUpdatedAt();
-        article.setUser(user);
+        article.setUser(savedUser);
         article.setStatus(ArticleStatus.PUBLISHED);
         Article saved = articleRepository.save(article);
         doNothing().when(emailService).sendEmail(article);
         mockMvc.perform(post("/api/articles/{sluguuid}/PUBLISH", "title-1-" + saved.getId())
-                .with(httpBasic("ankursaxena", "p@ssw0rd")))
+                .with(httpBasic("ankursaxena1", "p@ssw0rd")))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }

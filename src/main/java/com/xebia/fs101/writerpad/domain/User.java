@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,6 +28,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonBackReference
     private List<Article> articles;
+    @Enumerated(value = EnumType.STRING)
+    private WriterpadRole role;
 
     public User() {
     }
@@ -35,10 +39,19 @@ public class User {
         this.username = other.username;
         this.email = other.email;
         this.password = other.password;
+        this.role = other.role;
     }
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public WriterpadRole getRole() {
+        return role;
+    }
+
+    public void setRole(WriterpadRole role) {
+        this.role = role;
     }
 
     public UUID getId() {
@@ -69,10 +82,11 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password, WriterpadRole role) {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public List<Article> getArticles() {
@@ -89,6 +103,7 @@ public class User {
                 + "id=" + id
                 + ", username='" + username + '\''
                 + ", email='" + email + '\''
+                + ", role='" + role + '\''
                 + '}';
     }
 }

@@ -8,9 +8,11 @@ import com.xebia.fs101.writerpad.api.representations.TimeToReadResponse;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
-import com.xebia.fs101.writerpad.services.helpers.email.EmailService;
 import com.xebia.fs101.writerpad.services.helpers.TimeService;
+import com.xebia.fs101.writerpad.services.helpers.email.EmailService;
 import com.xebia.fs101.writerpad.services.security.CurrentUser;
+import com.xebia.fs101.writerpad.services.security.EditorOnly;
+import com.xebia.fs101.writerpad.services.security.WriterOnly;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +53,7 @@ public class ArticleResource {
     @Autowired
     TimeService timeService;
 
+    @WriterOnly
     @PostMapping
     public ResponseEntity<ArticleResponse> create(
             @CurrentUser User user,
@@ -62,6 +65,7 @@ public class ArticleResource {
                 .body(ArticleResponse.from(saved));
     }
 
+    @WriterOnly
     @PatchMapping("/{slugUuid}")
     public ResponseEntity<ArticleResponse> update(
             @CurrentUser User user,
@@ -73,6 +77,7 @@ public class ArticleResource {
                 .status(OK)
                 .body(ArticleResponse.from(updatedArticle));
     }
+
 
     @GetMapping("/{slugUuid}")
     public ResponseEntity<ArticleResponse> getById(@PathVariable("slugUuid") String slugUuid) {
@@ -121,13 +126,14 @@ public class ArticleResource {
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
+    @EditorOnly
     @PostMapping("/{slugUuid}/PUBLISH")
     public ResponseEntity<Void> publish(
             @PathVariable("slugUuid") String slugUuid) throws Exception {
         Article article = articleService.findBySlugId(slugUuid);
         if (articleService.isDraft(article.getStatus())) {
             Article published = articleService.publish(article);
-            emailService.sendEmail(published);
+            // emailService.sendEmail(published);
             return ResponseEntity.status(NO_CONTENT)
                     .build();
         } else if (!articleService.isDraft(article.getStatus())) {

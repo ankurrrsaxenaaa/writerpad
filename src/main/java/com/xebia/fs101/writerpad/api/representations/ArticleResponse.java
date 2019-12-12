@@ -1,6 +1,7 @@
 package com.xebia.fs101.writerpad.api.representations;
 
 import com.xebia.fs101.writerpad.domain.Article;
+import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import com.xebia.fs101.writerpad.utilities.ArticleStatus;
 
 import java.util.Date;
@@ -41,7 +42,7 @@ public class ArticleResponse {
         return new ArticleResponse.Builder()
                 .withId(article.getId().toString())
                 .withBody(article.getBody())
-                .withAuthor(new UserResponse(article.getUser().getUsername()))
+                .withAuthor(new UserResponse(article.getUser().getUsername(), article.getUser().getRole()))
                 .withCreatedAt(article.getCreatedAt())
                 .withUpdatedAt(article.getUpdatedAt())
                 .withDescription(article.getDescription())
@@ -58,13 +59,19 @@ public class ArticleResponse {
     private static class UserResponse {
 
         private String username;
+        private WriterpadRole role;
 
-        UserResponse(String username) {
+        UserResponse(String username, WriterpadRole role) {
             this.username = username;
+            this.role = role;
         }
 
         public String getUsername() {
             return username;
+        }
+
+        public WriterpadRole getRole() {
+            return role;
         }
     }
 

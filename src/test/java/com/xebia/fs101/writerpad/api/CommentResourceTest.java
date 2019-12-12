@@ -6,6 +6,7 @@ import com.xebia.fs101.writerpad.api.representations.UserRequest;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.Comment;
 import com.xebia.fs101.writerpad.domain.User;
+import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
@@ -74,7 +75,8 @@ class CommentResourceTest {
         UserRequest userRequest = new UserRequest(
                 "ankursaxena",
                 "ankur.saxena@xebia.com",
-                "p@ssw0rd");
+                "p@ssw0rd",
+                WriterpadRole.WRITER);
         user = userRequest.toUser(passwordEncoder);
         userRepository.save(user);
     }
