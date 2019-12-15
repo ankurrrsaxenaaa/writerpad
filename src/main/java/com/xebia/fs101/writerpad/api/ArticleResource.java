@@ -10,6 +10,7 @@ import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
 import com.xebia.fs101.writerpad.services.helpers.TimeService;
 import com.xebia.fs101.writerpad.services.helpers.email.EmailService;
+import com.xebia.fs101.writerpad.services.security.AdminOnly;
 import com.xebia.fs101.writerpad.services.security.CurrentUser;
 import com.xebia.fs101.writerpad.services.security.EditorOnly;
 import com.xebia.fs101.writerpad.services.security.WriterOnly;
@@ -118,11 +119,13 @@ public class ArticleResource {
                 .body(articleResponse);
     }
 
+    @AdminOnly
     @DeleteMapping("/{slugUuid}")
     public ResponseEntity<Void> delete(
             @CurrentUser User user,
             @PathVariable("slugUuid") String slugUuid) {
-        articleService.delete(slugUuid, user);
+        //articleService.delete(slugUuid, user);
+        articleService.delete(slugUuid);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 

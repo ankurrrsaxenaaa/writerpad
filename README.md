@@ -373,3 +373,94 @@ Go to this https://source.unsplash.com/ to learn how to find random image. Save 
     }
 }
 ```
+## Day 11
+
+### Story 22: Get user profile
+
+```
+GET /api/profiles/:username
+```
+
+A user should be able to view profile details for any user. Authentication is optional.
+
+The profile response 
+
+```
+HTTP 200
+```
+
+```json
+{
+    "username": "shekhargulati",
+    "following": false,
+    "followerCount": 0,
+    "followingCount": 0,
+    "articles": [
+        {
+            "id": "slanldcwndl111",
+            "title": "Hello, World!"
+        }
+    ]
+}
+```
+
+### Story 23: Follow a user
+
+```
+POST /api/profiles/:username/follow
+```
+
+Authentication required, returns a profile mentioned above
+
+No additional parameters are required.
+
+### Story 24: Unfollow a user
+
+```
+DELETE /api/profiles/:username/follow
+```
+
+Authentication required. It returns a profile mentioned above.
+
+No additional parameters are are required.
+
+### Story 25: User Roles 
+
+Add user roles to the application. Each user is associated with either of the follwoing roles :
+- WRITER
+- EDITOR
+- ADMIN
+
+As a WRITER I should be able to perform the following only :
+- Create Article
+- Update Article
+- Read Article
+- Create Comments
+- Read Comments
+
+As a EDITOR I should be able to perform the following only :
+- Publish Article 
+- Read Article
+- Create Comments
+- Read Comments
+
+As an ADMIN I should be able to perform the following :
+- Create User
+- Delete Article
+- Perform as WRITER
+- Perform as EDITOR
+
+### Story 26: Perform JWT token based Authentication for API
+
+In the existing  system we have configured `basic` authentication  for `/api/*`. We need to remove `basic` authentication  and use `JWT` instead. The process would consist  of two parts :
+- generate token using eixisting `form` login
+- pass the generated token as `Bearer` authentication header.
+
+Use `JJWT` library to configure the token encoding and decoding.
+
+References :
+- https://jwt.io/
+- https://dzone.com/articles/implementing-jwt-authentication-on-spring-boot-api
+- https://dev.to/keysh/spring-security-with-jwt-3j76
+
+

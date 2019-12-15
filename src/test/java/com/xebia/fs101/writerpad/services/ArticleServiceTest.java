@@ -45,7 +45,7 @@ class ArticleServiceTest {
                 "ankur.saxena@xebia.com",
                 "p@ssw0rd",
                 WriterpadRole.WRITER
-                );
+        );
         this.user.setId(UUID.randomUUID());
     }
 
@@ -61,7 +61,8 @@ class ArticleServiceTest {
         String slugUuid = "abc-" + UUID.randomUUID();
         when(articleRepository.findById(extractId(slugUuid))).thenReturn(Optional.of(article));
         doNothing().when(articleRepository).deleteById(extractId(slugUuid));
-        articleService.delete(slugUuid, user);
+        // articleService.delete(slugUuid, user);
+        articleService.delete(slugUuid);
         verify(articleRepository).findById(extractId(slugUuid));
         verify(articleRepository).deleteById(extractId(slugUuid));
     }
@@ -76,7 +77,8 @@ class ArticleServiceTest {
         article.setUser(user);
         String slugUuid = "abc-" + UUID.randomUUID();
         when(articleRepository.findById(any())).thenReturn(Optional.of(article));
-        articleService.delete(slugUuid, user);
+        // articleService.delete(slugUuid, user);
+        articleService.delete(slugUuid);
         verify(articleRepository).findById(any());
         verify(articleRepository).deleteById(any());
         verifyNoMoreInteractions(articleRepository);
