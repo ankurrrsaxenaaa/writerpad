@@ -30,6 +30,9 @@ public class User {
     private List<Article> articles;
     @Enumerated(value = EnumType.STRING)
     private WriterpadRole role;
+    private boolean following;
+    private int followerCount;
+    private int followingCount;
 
     public User() {
     }
@@ -39,7 +42,22 @@ public class User {
         this.username = other.username;
         this.email = other.email;
         this.password = other.password;
+        this.articles = other.articles;
         this.role = other.role;
+        this.following = other.following;
+        this.followerCount = other.followerCount;
+        this.followingCount = other.followingCount;
+    }
+
+    private User(Builder builder) {
+        setUsername(builder.username);
+        setEmail(builder.email);
+        setPassword(builder.password);
+        setArticles(builder.articles);
+        setRole(builder.role);
+        following = false;
+        followerCount = 0;
+        followingCount = 0;
     }
 
     public void setId(UUID id) {
@@ -82,15 +100,33 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String email, String password, WriterpadRole role) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
 
     public List<Article> getArticles() {
         return articles;
+    }
+
+    public boolean getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(boolean following) {
+        this.following = following;
+    }
+
+    public int getFollowerCount() {
+        return followerCount;
+    }
+
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 
     public void setArticles(List<Article> articles) {
@@ -105,6 +141,65 @@ public class User {
                 + ", email='" + email + '\''
                 + ", role='" + role + '\''
                 + '}';
+    }
+
+
+    public static final class Builder {
+        private String username;
+        private String email;
+        private String password;
+        private List<Article> articles;
+        private WriterpadRole role;
+        private boolean following;
+        private int followerCount;
+        private int followingCount;
+
+        public Builder() {
+        }
+
+        public Builder withUsername(String val) {
+            username = val;
+            return this;
+        }
+
+        public Builder withEmail(String val) {
+            email = val;
+            return this;
+        }
+
+        public Builder withPassword(String val) {
+            password = val;
+            return this;
+        }
+
+        public Builder withArticles(List<Article> val) {
+            articles = val;
+            return this;
+        }
+
+        public Builder withRole(WriterpadRole val) {
+            role = val;
+            return this;
+        }
+
+        public Builder withFollowing(boolean val) {
+            following = val;
+            return this;
+        }
+
+        public Builder withFollowerCount(int val) {
+            followerCount = val;
+            return this;
+        }
+
+        public Builder withFollowingCount(int val) {
+            followingCount = val;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
     }
 }
 

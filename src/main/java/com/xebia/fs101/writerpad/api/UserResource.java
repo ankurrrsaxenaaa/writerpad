@@ -2,6 +2,7 @@ package com.xebia.fs101.writerpad.api;
 
 
 import com.xebia.fs101.writerpad.api.representations.UserRequest;
+import com.xebia.fs101.writerpad.api.representations.UserResponse;
 import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.services.domain.UserService;
 import com.xebia.fs101.writerpad.services.security.AdminOnly;
@@ -29,10 +30,10 @@ public class UserResource {
 
     @AdminOnly
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
         User toSave = userRequest.toUser(passwordEncoder);
         User saved = userService.save(toSave);
-        return ResponseEntity.status(CREATED).body(saved);
+        return ResponseEntity.status(CREATED).body(UserResponse.from(saved));
     }
 
     @GetMapping

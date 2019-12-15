@@ -7,6 +7,7 @@ import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
 import com.xebia.fs101.writerpad.services.helpers.image.ImageFinder;
+import com.xebia.fs101.writerpad.services.helpers.plagiarism.PlagiarismChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,8 @@ class ArticleServiceTest {
     private UserRepository userRepository;
     @Mock
     private ImageFinder imageFinder;
+    @Mock
+    PlagiarismChecker plagiarismChecker;
     @InjectMocks
     private ArticleService articleService;
 
@@ -41,11 +44,11 @@ class ArticleServiceTest {
 
     @BeforeEach
     void setUp() {
-        this.user = new User("ankursaxena",
-                "ankur.saxena@xebia.com",
-                "p@ssw0rd",
-                WriterpadRole.WRITER
-        );
+        this.user = new User.Builder().withUsername("ankursaxena1")
+                .withEmail("ankur.saxena1@xebia.com")
+                .withPassword("p@ssw0rd")
+                .withRole(WriterpadRole.EDITOR)
+                .build();
         this.user.setId(UUID.randomUUID());
     }
 
@@ -103,6 +106,7 @@ class ArticleServiceTest {
         article.setUser(user);
         when(imageFinder.findRandomImage()).thenReturn("");
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(plagiarismChecker.isArticlePlagiarised(any())).thenReturn(false);
         articleService.save(article, user);
         verify(articleRepository).save(any());
     }

@@ -333,11 +333,11 @@ public class ArticleResourceTest {
 
     @Test
     void should_be_able_to_publish_the_article() throws Exception {
-        User user1 = new User(
-                "ankursaxena1",
-                "ankur.saxena1@xebia.com",
-                passwordEncoder.encode("p@ssw0rd"),
-                WriterpadRole.EDITOR);
+        User user1 = new User.Builder().withUsername("ankursaxena1")
+                .withEmail("ankur.saxena1@xebia.com")
+                .withPassword(passwordEncoder.encode("p@ssw0rd"))
+                .withRole(WriterpadRole.EDITOR)
+                .build();
         User savedUser = userRepository.save(user1);
         Article article = createArticle("Title 1", "Description 1", "Body 1");
         article.setUser(savedUser);
@@ -351,11 +351,11 @@ public class ArticleResourceTest {
 
     @Test
     void should_return_400_when_status_is_changed_to_published_of_an_already_published_article() throws Exception {
-        User user1 = new User(
-                "ankursaxena1",
-                "ankur.saxena1@xebia.com",
-                passwordEncoder.encode("p@ssw0rd"),
-                WriterpadRole.EDITOR);
+        User user1 = new User.Builder().withUsername("ankursaxena1")
+                .withEmail("ankur.saxena1@xebia.com")
+                .withPassword(passwordEncoder.encode("p@ssw0rd"))
+                .withRole(WriterpadRole.EDITOR)
+                .build();
         User savedUser = userRepository.save(user1);
         Article article = createArticle("Title 1", "Description 1", "Body 1");
         article.setUpdatedAt();
