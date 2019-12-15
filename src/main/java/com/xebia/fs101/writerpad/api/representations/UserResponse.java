@@ -139,7 +139,7 @@ public class UserResponse {
                 .withUsername(user.getUsername())
                 .withEmail(user.getUsername())
                 .withRole(user.getRole())
-                .withFollowing(user.getFollowing())
+                .withFollowing(user.isFollowing())
                 .withFollowingCount(user.getFollowingCount())
                 .withFollowerCount(user.getFollowerCount())
                 .build();

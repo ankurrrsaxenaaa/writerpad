@@ -3,8 +3,10 @@ package com.xebia.fs101.writerpad.api;
 import com.xebia.fs101.writerpad.api.representations.CommentRequest;
 import com.xebia.fs101.writerpad.domain.Article;
 import com.xebia.fs101.writerpad.domain.Comment;
+import com.xebia.fs101.writerpad.domain.User;
 import com.xebia.fs101.writerpad.services.domain.ArticleService;
 import com.xebia.fs101.writerpad.services.domain.CommentService;
+import com.xebia.fs101.writerpad.services.security.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +40,8 @@ public class CommentResource {
 
 
     @PostMapping("/{slugUuid}/comments")
-    public ResponseEntity<Comment> post(@Valid @RequestBody CommentRequest commentRequest,
+    public ResponseEntity<Comment> post(@CurrentUser User user,
+                                        @Valid @RequestBody CommentRequest commentRequest,
                                         @PathVariable("slugUuid") String slugUuid,
                                         HttpServletRequest request) throws IOException {
         Article article = articleService.findBySlugId(slugUuid);
@@ -47,7 +50,6 @@ public class CommentResource {
         return saved.map(comment -> ResponseEntity.status(CREATED)
                 .body(comment)).orElseGet(() -> ResponseEntity.status(BAD_REQUEST)
                 .build());
-
     }
 
     @GetMapping("/{slugUuid}/comments")

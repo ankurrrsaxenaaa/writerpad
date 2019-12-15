@@ -70,7 +70,7 @@ public class ProfileResponse {
     public static ProfileResponse from(User user) {
         return new ProfileResponse.Builder()
                 .withUsername(user.getUsername())
-                .withFollowing(user.getFollowing())
+                .withFollowing(user.isFollowing())
                 .withFollowingCount(user.getFollowingCount())
                 .withFollowerCount(user.getFollowerCount())
                 .withArticles(user.getArticles()

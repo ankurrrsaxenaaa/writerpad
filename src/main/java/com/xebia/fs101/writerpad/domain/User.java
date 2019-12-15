@@ -105,7 +105,7 @@ public class User {
         return articles;
     }
 
-    public boolean getFollowing() {
+    public boolean isFollowing() {
         return following;
     }
 
