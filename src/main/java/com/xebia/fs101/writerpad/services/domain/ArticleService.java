@@ -58,8 +58,8 @@ public class ArticleService {
 
 
     public Article update(String slugUuid, Article copyFrom, User user) {
-        if (copyFrom.getBody() != null &&
-                plagiarismChecker.isArticlePlagiarised(copyFrom.getBody())) {
+        if (copyFrom.getBody() != null
+                && plagiarismChecker.isArticlePlagiarised(copyFrom.getBody())) {
             throw new DuplicateArticleException();
         }
         Article article = findBySlugId(slugUuid);

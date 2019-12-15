@@ -42,7 +42,8 @@ public class ArticleResponse {
         return new ArticleResponse.Builder()
                 .withId(article.getId().toString())
                 .withBody(article.getBody())
-                .withAuthor(new UserResponse(article.getUser().getUsername(), article.getUser().getRole()))
+                .withAuthor(new UserResponse(article.getUser().getUsername(),
+                        article.getUser().getRole()))
                 .withCreatedAt(article.getCreatedAt())
                 .withUpdatedAt(article.getUpdatedAt())
                 .withDescription(article.getDescription())

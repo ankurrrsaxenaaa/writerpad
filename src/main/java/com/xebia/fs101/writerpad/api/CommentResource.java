@@ -68,7 +68,8 @@ public class CommentResource {
     }
 
     @DeleteMapping("/{slugUuid}/comments/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("slugUuid") String slugUuid,
+    public ResponseEntity<Void> delete(@CurrentUser User user,
+                                       @PathVariable("slugUuid") String slugUuid,
                                        @PathVariable("id") String commentId) {
         articleService.findBySlugId(slugUuid);
         Optional<Comment> comment = commentService.find(commentId);
