@@ -67,13 +67,13 @@ public class ProfileResponse {
     }
 
 
-    public static ProfileResponse from(User user, String username) {
+    public static ProfileResponse from(User user, User found) {
         return new ProfileResponse.Builder()
-                .withUsername(user.getUsername())
-                .withFollowing(user.getFollowing().contains(username))
-                .withFollowingCount(user.getFollowingCount())
-                .withFollowerCount(user.getFollowerCount())
-                .withArticles(user.getArticles()
+                .withUsername(found.getUsername())
+                .withFollowing(user.getFollowing().contains(found.getUsername()))
+                .withFollowingCount(found.getFollowingCount())
+                .withFollowerCount(found.getFollowerCount())
+                .withArticles(found.getArticles()
                         .stream()
                         .map(article ->
                                 new ArticleResponse(article.getId(), article.getTitle()))
