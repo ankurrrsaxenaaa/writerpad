@@ -2,7 +2,7 @@ package com.xebia.fs101.writerpad.api;
 
 import com.xebia.fs101.writerpad.api.representations.ProfileResponse;
 import com.xebia.fs101.writerpad.domain.User;
-import com.xebia.fs101.writerpad.services.ProfileService;
+import com.xebia.fs101.writerpad.services.domain.ProfileService;
 import com.xebia.fs101.writerpad.services.domain.UserService;
 import com.xebia.fs101.writerpad.services.security.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,13 @@ public class ProfileResource {
     ProfileService profileService;
 
     @GetMapping("/{username}")
-    public ResponseEntity<ProfileResponse> get(@PathVariable String username) {
-        User user = userService.find(username);
-        return ResponseEntity.status(OK).body(ProfileResponse.from(user));
+    public ResponseEntity<ProfileResponse> get(@CurrentUser User user,
+                                               @PathVariable String username) {
+        User found = userService.find(username);
+        if (user == null) {
+            return ResponseEntity.status(OK).body(ProfileResponse.from(found));
+        }
+        return ResponseEntity.status(OK).body(ProfileResponse.from(found, user.getUsername()));
     }
 
     @PostMapping("/{username}/follow")
@@ -36,7 +40,7 @@ public class ProfileResource {
                                                   @PathVariable String username) {
         User userToFollow = userService.find(username);
         User followingUser = profileService.follow(user, userToFollow);
-        return ResponseEntity.status(OK).body(ProfileResponse.from(followingUser));
+        return ResponseEntity.status(OK).body(ProfileResponse.from(followingUser, username));
     }
 
     @DeleteMapping("/{username}/follow")
@@ -44,6 +48,6 @@ public class ProfileResource {
                                                     @PathVariable String username) {
         User usertoUnfollow = userService.find(username);
         User unfollowingUser = profileService.unfollow(user, usertoUnfollow);
-        return ResponseEntity.status(OK).body(ProfileResponse.from(unfollowingUser));
+        return ResponseEntity.status(OK).body(ProfileResponse.from(unfollowingUser, username));
     }
 }

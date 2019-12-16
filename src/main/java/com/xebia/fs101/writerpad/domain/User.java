@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class User {
     private List<Article> articles;
     @Enumerated(value = EnumType.STRING)
     private WriterpadRole role;
-    private boolean following;
+    private HashSet<String> following;
     private int followerCount;
     private int followingCount;
 
@@ -55,7 +56,7 @@ public class User {
         setPassword(builder.password);
         setArticles(builder.articles);
         setRole(builder.role);
-        following = false;
+        following = new HashSet<String>();
         followerCount = 0;
         followingCount = 0;
     }
@@ -105,11 +106,11 @@ public class User {
         return articles;
     }
 
-    public boolean isFollowing() {
+    public HashSet<String> getFollowing() {
         return following;
     }
 
-    public void setFollowing(boolean following) {
+    public void setFollowing(HashSet<String> following) {
         this.following = following;
     }
 
@@ -150,7 +151,7 @@ public class User {
         private String password;
         private List<Article> articles;
         private WriterpadRole role;
-        private boolean following;
+        private HashSet<String> following;
         private int followerCount;
         private int followingCount;
 
@@ -182,7 +183,7 @@ public class User {
             return this;
         }
 
-        public Builder withFollowing(boolean val) {
+        public Builder withFollowing(HashSet<String> val) {
             following = val;
             return this;
         }

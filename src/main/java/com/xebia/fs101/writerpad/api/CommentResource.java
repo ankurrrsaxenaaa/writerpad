@@ -40,10 +40,11 @@ public class CommentResource {
 
 
     @PostMapping("/{slugUuid}/comments")
-    public ResponseEntity<Comment> post(@CurrentUser User user,
-                                        @Valid @RequestBody CommentRequest commentRequest,
-                                        @PathVariable("slugUuid") String slugUuid,
-                                        HttpServletRequest request) throws IOException {
+    public ResponseEntity<Comment> post(
+            @CurrentUser User user,
+            @Valid @RequestBody CommentRequest commentRequest,
+            @PathVariable("slugUuid") String slugUuid,
+            HttpServletRequest request) throws IOException {
         Article article = articleService.findBySlugId(slugUuid);
         Comment toSave = commentRequest.toComment(article, request.getRemoteAddr());
         Optional<Comment> saved = commentService.save(toSave);
@@ -53,7 +54,9 @@ public class CommentResource {
     }
 
     @GetMapping("/{slugUuid}/comments")
-    public ResponseEntity<List<Comment>> list(@PathVariable("slugUuid") String slugUuid) {
+    public ResponseEntity<List<Comment>> list(
+            @CurrentUser User user,
+            @PathVariable("slugUuid") String slugUuid) {
         articleService.findBySlugId(slugUuid);
         Optional<List<Comment>> comments = commentService.findAllByArticleSlugId(slugUuid);
         if (!comments.isPresent()) {

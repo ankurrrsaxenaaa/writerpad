@@ -81,7 +81,9 @@ public class ArticleResource {
 
 
     @GetMapping("/{slugUuid}")
-    public ResponseEntity<ArticleResponse> getById(@PathVariable("slugUuid") String slugUuid) {
+    public ResponseEntity<ArticleResponse> getById(
+            @CurrentUser User user,
+            @PathVariable("slugUuid") String slugUuid) {
         Article article = articleService.findBySlugId(slugUuid);
         return ResponseEntity
                 .status(CREATED)
@@ -90,6 +92,7 @@ public class ArticleResource {
 
     @GetMapping("/")
     public ResponseEntity<List<ArticleResponse>> getByStatus(
+            @CurrentUser User user,
             @RequestParam("status") String status,
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize) {
@@ -106,6 +109,7 @@ public class ArticleResource {
 
     @GetMapping
     public ResponseEntity<List<ArticleResponse>> listAll(
+            @CurrentUser User user,
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "10") Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
@@ -149,6 +153,7 @@ public class ArticleResource {
 
     @GetMapping("/{slugUuid}/timetoread")
     public ResponseEntity<TimeToReadResponse> timeToRead(
+            @CurrentUser
             @PathVariable("slugUuid") String slugUuid) {
         Article article = articleService.findBySlugId(slugUuid);
         int readingTimeInSeconds = timeService.readingTimeInSeconds(article.getBody());
@@ -159,7 +164,9 @@ public class ArticleResource {
     }
 
     @GetMapping("/tags")
-    public ResponseEntity<List<TagResponse>> getTags() {
+    public ResponseEntity<List<TagResponse>> getTags(
+            @CurrentUser User user
+    ) {
         Map<String, Long> tags = articleService.getTags();
         List<TagResponse> tagResponse = tags.entrySet()
                 .stream()
@@ -171,6 +178,7 @@ public class ArticleResource {
 
     @PutMapping("/{slugUuid}/FAVOURITE")
     public ResponseEntity<Void> favouriteArticle(
+            @CurrentUser User user,
             @PathVariable String slugUuid) {
         Article article = articleService.findBySlugId(slugUuid);
         articleService.favourite(article);
@@ -179,6 +187,7 @@ public class ArticleResource {
 
     @DeleteMapping("/{slugUuid}/UNFAVOURITE")
     public ResponseEntity<Void> unfavouriteArticle(
+            @CurrentUser User user,
             @PathVariable("slugUuid") String slugUuid) {
         Article article = articleService.findBySlugId(slugUuid);
         articleService.unfavourite(article);

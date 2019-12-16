@@ -67,10 +67,23 @@ public class ProfileResponse {
     }
 
 
+    public static ProfileResponse from(User user, String username) {
+        return new ProfileResponse.Builder()
+                .withUsername(user.getUsername())
+                .withFollowing(user.getFollowing().contains(username))
+                .withFollowingCount(user.getFollowingCount())
+                .withFollowerCount(user.getFollowerCount())
+                .withArticles(user.getArticles()
+                        .stream()
+                        .map(article ->
+                                new ArticleResponse(article.getId(), article.getTitle()))
+                        .collect(Collectors.toList())).build();
+    }
+
     public static ProfileResponse from(User user) {
         return new ProfileResponse.Builder()
                 .withUsername(user.getUsername())
-                .withFollowing(user.isFollowing())
+                .withFollowing(false)
                 .withFollowingCount(user.getFollowingCount())
                 .withFollowerCount(user.getFollowerCount())
                 .withArticles(user.getArticles()

@@ -10,7 +10,6 @@ public class UserResponse {
     private String username;
     private String email;
     private WriterpadRole role;
-    private boolean following;
     private int followerCount;
     private int followingCount;
 
@@ -19,7 +18,6 @@ public class UserResponse {
         setUsername(builder.username);
         setEmail(builder.email);
         setRole(builder.role);
-        setFollowing(builder.following);
         setFollowerCount(builder.followerCount);
         setFollowingCount(builder.followingCount);
     }
@@ -57,14 +55,6 @@ public class UserResponse {
         this.role = role;
     }
 
-    public boolean isFollowing() {
-        return following;
-    }
-
-    public void setFollowing(boolean following) {
-        this.following = following;
-    }
-
     public int getFollowerCount() {
         return followerCount;
     }
@@ -86,7 +76,6 @@ public class UserResponse {
         private String username;
         private String email;
         private WriterpadRole role;
-        private boolean following;
         private int followerCount;
         private int followingCount;
 
@@ -113,10 +102,6 @@ public class UserResponse {
             return this;
         }
 
-        public Builder withFollowing(boolean val) {
-            following = val;
-            return this;
-        }
 
         public Builder withFollowerCount(int val) {
             followerCount = val;
@@ -139,7 +124,6 @@ public class UserResponse {
                 .withUsername(user.getUsername())
                 .withEmail(user.getUsername())
                 .withRole(user.getRole())
-                .withFollowing(user.isFollowing())
                 .withFollowingCount(user.getFollowingCount())
                 .withFollowerCount(user.getFollowerCount())
                 .build();

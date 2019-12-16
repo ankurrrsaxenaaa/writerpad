@@ -1,8 +1,8 @@
-package com.xebia.fs101.writerpad.services;
+package com.xebia.fs101.writerpad.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "You have no user to unfollow")
+@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "You are not following this user")
 public class UserUnfollowingException extends RuntimeException {
 }
