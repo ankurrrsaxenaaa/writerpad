@@ -33,6 +33,7 @@ public class ProfileResource {
             return ResponseEntity.status(OK).body(ProfileResponse.from(found));
         }
         User searchingUser = userService.find(user.getUsername());
+        System.out.println(searchingUser);
         return ResponseEntity.status(OK).body(ProfileResponse.from(searchingUser, found));
     }
 

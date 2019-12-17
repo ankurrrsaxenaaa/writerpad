@@ -3,6 +3,7 @@ package com.xebia.fs101.writerpad.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,6 +32,7 @@ public class User {
     private List<Article> articles;
     @Enumerated(value = EnumType.STRING)
     private WriterpadRole role;
+    @ElementCollection
     private HashSet<String> following;
     private int followerCount;
     private int followingCount;
@@ -136,14 +138,18 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{"
-                + "id=" + id
-                + ", username='" + username + '\''
-                + ", email='" + email + '\''
-                + ", role='" + role + '\''
-                + '}';
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", articles=" + articles +
+                ", role=" + role +
+                ", following=" + following +
+                ", followerCount=" + followerCount +
+                ", followingCount=" + followingCount +
+                '}';
     }
-
 
     public static final class Builder {
         private String username;
