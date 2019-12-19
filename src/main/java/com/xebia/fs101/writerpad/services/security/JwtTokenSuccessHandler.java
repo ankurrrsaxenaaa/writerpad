@@ -25,8 +25,10 @@ public class JwtTokenSuccessHandler extends SimpleUrlAuthenticationSuccessHandle
     private JwtTokenService tokenHelper;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication)
+            throws IOException, ServletException {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
         String jws = this.tokenHelper.generateToken(user.getUsername());

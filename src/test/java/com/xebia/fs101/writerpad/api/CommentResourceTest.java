@@ -10,6 +10,7 @@ import com.xebia.fs101.writerpad.domain.WriterpadRole;
 import com.xebia.fs101.writerpad.repository.ArticleRepository;
 import com.xebia.fs101.writerpad.repository.CommentRepository;
 import com.xebia.fs101.writerpad.repository.UserRepository;
+import com.xebia.fs101.writerpad.services.helpers.SpamChecker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,8 @@ class CommentResourceTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    SpamChecker spamChecker;
 
     private User user;
 

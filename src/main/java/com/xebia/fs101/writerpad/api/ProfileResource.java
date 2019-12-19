@@ -50,6 +50,7 @@ public class ProfileResource {
                                                     @PathVariable String username) {
         User usertoUnfollow = userService.find(username);
         User unfollowingUser = profileService.unfollow(user, usertoUnfollow);
-        return ResponseEntity.status(OK).body(ProfileResponse.from(unfollowingUser, usertoUnfollow));
+        return ResponseEntity.status(OK).body(ProfileResponse.from(unfollowingUser,
+                usertoUnfollow));
     }
 }

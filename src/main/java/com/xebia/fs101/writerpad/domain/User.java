@@ -32,7 +32,6 @@ public class User {
     private List<Article> articles;
     @Enumerated(value = EnumType.STRING)
     private WriterpadRole role;
-    @ElementCollection
     private HashSet<String> following;
     private int followerCount;
     private int followingCount;
@@ -136,20 +135,7 @@ public class User {
         this.articles = articles;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", articles=" + articles +
-                ", role=" + role +
-                ", following=" + following +
-                ", followerCount=" + followerCount +
-                ", followingCount=" + followingCount +
-                '}';
-    }
+
 
     public static final class Builder {
         private String username;
@@ -157,6 +143,7 @@ public class User {
         private String password;
         private List<Article> articles;
         private WriterpadRole role;
+        @ElementCollection
         private HashSet<String> following;
         private int followerCount;
         private int followingCount;
